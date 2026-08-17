@@ -20,7 +20,7 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 25px;
             background-color: #fff;
             padding: 15px;
@@ -28,7 +28,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         .tab-btn {
-            font-size: 1.2rem; padding: 12px 20px; border: none; border-radius: 12px;
+            font-size: 1.1rem; padding: 10px 15px; border: none; border-radius: 12px;
             background-color: transparent; color: #7f8c8d; font-weight: bold; cursor: pointer; transition: all 0.3s ease;
         }
         .tab-btn.active {
@@ -128,6 +128,17 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
+        /* --- 拼字遊戲專屬樣式 --- */
+        .spell-game-section { background-color: #fff3e0; border: 3px solid #e67e22; }
+        .spell-slot-container {
+            display: flex; justify-content: center; gap: 10px; margin: 25px 0 15px 0; min-height: 50px;
+        }
+        .spell-slot {
+            font-size: 2.5rem; font-weight: bold; color: #2c3e50;
+            border-bottom: 4px solid #34495e; min-width: 40px; text-align: center; padding-bottom: 5px;
+            font-family: monospace; transition: all 0.3s ease;
+        }
+
         /* --- 動詞區塊樣式 --- */
         .verb-section { background-color: #fce4ec; border: 3px solid #f06292; }
         .verb-game-section { background-color: #f5eef8; border: 3px solid #9b59b6; }
@@ -151,9 +162,10 @@
     
     <!-- 頂部導覽分頁按鈕 -->
     <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('tab-phonics', this)">📖 1. AEIOU 發音</button>
-        <button class="tab-btn" onclick="switchTab('tab-verbs', this)">🏃 2. 動詞練習與 9 題測驗</button>
-        <button class="tab-btn" onclick="switchTab('tab-custom', this)">🔍 3. 自訂字典</button>
+        <button class="tab-btn active" onclick="switchTab('tab-phonics', this)">📖 1. 發音填空</button>
+        <button class="tab-btn" onclick="switchTab('tab-verbs', this)">🏃 2. 動詞測驗</button>
+        <button class="tab-btn" onclick="switchTab('tab-spelling', this)">🧩 3. 拼字挑戰</button>
+        <button class="tab-btn" onclick="switchTab('tab-custom', this)">🔍 4. 字典</button>
     </div>
 
     <!-- =========================
@@ -194,7 +206,7 @@
         </div>
 
         <div class="section-container game-section">
-            <h2 id="title-game" style="font-size: 1.2rem;">🎮 限時挑戰 (長母音)</h2>
+            <h2 id="title-game" style="font-size: 1.2rem;">🎮 限時挑戰 (發音填空)</h2>
             <div class="game-stats">
                 <span id="game-timer" style="color: #e67e22;">⏳ 05:00</span>
                 <span id="game-score" style="color: #27ae60;">🏆 答對: 0</span>
@@ -205,7 +217,7 @@
             </div>
             <div id="game-board" style="display: none;">
                 <button class="game-hint-btn" onclick="playGameHint()">🔊 再聽一次發音</button>
-                <div class="game-word-display" id="game-word">c _____ k e</div>
+                <div class="game-word-display" id="game-word">c ????? k e</div>
                 <div class="game-zh-display" id="game-zh"></div>
                 <div id="game-feedback" style="font-weight: bold; color: #7f8c8d;">請選擇缺少的母音：</div>
                 <div class="game-options-container" id="game-options"></div>
@@ -219,7 +231,6 @@
     <div id="tab-verbs" class="tab-content">
         <button class="reset-btn" onclick="resetCurrentTab('verbs')">🔄 Reset 本頁</button>
         
-        <!-- 上方：原本的動詞短句練習 -->
         <div class="section-container verb-section">
             <h2 style="font-size: 1.2rem;">🏃 動詞短句練習 (Verbs)</h2>
             <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">點擊按鈕，練習朗讀完整句子</p>
@@ -238,25 +249,20 @@
             <div id="verb-zh-display" style="font-size: 1.2rem; color: #7f8c8d; font-weight: bold; margin-top: 5px;"></div>
         </div>
 
-        <!-- 下方：9 題動詞填空挑戰 -->
         <div class="section-container verb-game-section">
             <h2 style="font-size: 1.2rem;">🎮 動詞短句 9 題填空挑戰</h2>
             <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">看句子，選出正確的動詞填空</p>
-            
             <div class="game-stats">
                 <span id="verb-progress" style="color: #8e44ad;">📊 第 1 題 / 共 9 題</span>
                 <span id="verb-score" style="color: #27ae60;">🏆 得分: 0 / 9</span>
             </div>
-            
             <div id="verb-start-screen">
                 <p id="verb-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
                 <button class="game-start-btn" style="background-color: #8e44ad; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3);" onclick="startVerbQuiz()">▶️ 開始 9 題動詞測驗</button>
             </div>
-            
             <div id="verb-board" style="display: none;">
-                <div class="game-word-display" id="verb-sentence" style="font-size: 1.8rem; letter-spacing: 1px; margin-top: 10px;">I _____ a book.</div>
+                <div class="game-word-display" id="verb-sentence" style="font-size: 1.8rem; letter-spacing: 1px; margin-top: 10px;">I ????? a book.</div>
                 <div class="game-zh-display" id="verb-zh" style="margin-top: 10px;">(我讀一本書)</div>
-                
                 <div id="verb-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 10px;">請選擇正確的動詞：</div>
                 <div class="game-options-container" id="verb-options"></div>
             </div>
@@ -264,7 +270,43 @@
     </div>
 
     <!-- =========================
-         第三章：自訂字典區塊 
+         第三章：拼字遊戲區塊 (NEW)
+         ========================= -->
+    <div id="tab-spelling" class="tab-content">
+        <button class="reset-btn" onclick="resetCurrentTab('spelling')">🔄 Reset 本頁</button>
+        
+        <div class="mode-selector">
+            <button id="spell-btn-long" class="mode-btn active" onclick="setSpellMode('long')">🌟 長母音</button>
+            <button id="spell-btn-short" class="mode-btn" onclick="setSpellMode('short')">⭐ 短母音</button>
+            <button id="spell-btn-mixed" class="mode-btn" onclick="setSpellMode('mixed')">🔥 綜合挑戰</button>
+        </div>
+
+        <div class="section-container spell-game-section">
+            <h2 style="font-size: 1.2rem;">🧩 單字拼拼樂 (發音拆解)</h2>
+            <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">聽發音，把打亂的發音組合按順序拼出來！</p>
+            
+            <div class="game-stats">
+                <span id="spell-timer" style="color: #d35400;">⏳ 05:00</span>
+                <span id="spell-score" style="color: #27ae60;">🏆 拼對: 0</span>
+            </div>
+            
+            <div id="spell-start-screen">
+                <p id="spell-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
+                <button class="game-start-btn" style="background-color: #e67e22; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);" onclick="startSpellGame()">▶️ 開始 5 分鐘挑戰</button>
+            </div>
+            
+            <div id="spell-board" style="display: none;">
+                <button class="game-hint-btn" style="background-color: #e67e22;" onclick="playSpellHint()">🔊 再聽一次發音</button>
+                <div id="spell-slots" class="spell-slot-container"></div>
+                <div class="game-zh-display" id="spell-zh"></div>
+                <div id="spell-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 10px;">請依序點擊拼出單字：</div>
+                <div class="game-options-container" id="spell-options"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================
+         第四章：自訂字典區塊 
          ========================= -->
     <div id="tab-custom" class="tab-content">
         <button class="reset-btn" onclick="resetCurrentTab('custom')">🔄 Reset 本頁</button>
@@ -285,6 +327,7 @@
             btnElement.classList.add('active');
 
             if (tabId !== 'tab-phonics' && isGameActive) forceEndGame();
+            if (tabId !== 'tab-spelling' && isSpellActive) forceEndSpellGame();
         }
 
         // --- Reset 當前頁面函數 ---
@@ -297,6 +340,9 @@
             } else if (tabName === 'verbs') {
                 document.getElementById('verb-display').innerText = '請點擊上方動詞！';
                 document.getElementById('verb-zh-display').innerText = '';
+            } else if (tabName === 'spelling') {
+                forceEndSpellGame();
+                setSpellMode('long');
             } else if (tabName === 'custom') {
                 document.getElementById('custom-word').value = '';
                 document.getElementById('translation-display').innerText = '';
@@ -339,21 +385,21 @@
         const mixedExamples = { 'A':[], 'E':[], 'I':[], 'O':[], 'U':[] };
         ['A','E','I','O','U'].forEach(v => { mixedExamples[v] = [...longExamples[v], ...shortExamples[v]]; });
 
-        // --- 挖空題目全面統一為 5 個底線 _____ ---
+        // --- 挖空題目全面統一為 5 個問號 ????? ---
         const longGameWords = [
-            {w: 'maid', b: 'm _____ d', a: 'ai', zh: '女僕'}, {w: 'paint', b: 'p _____ n t', a: 'ai', zh: '畫畫'}, {w: 'rain', b: 'r _____ n', a: 'ai', zh: '雨'}, {w: 'bay', b: 'b _____', a: 'ay', zh: '海灣'}, {w: 'hay', b: 'h _____', a: 'ay', zh: '乾草'}, {w: 'pay', b: 'p _____', a: 'ay', zh: '支付'}, {w: 'cake', b: 'c _____ k e', a: 'a', zh: '蛋糕'}, {w: 'gate', b: 'g _____ t e', a: 'a', zh: '大門'}, {w: 'tape', b: 't _____ p e', a: 'a', zh: '膠帶'},
-            {w: 'bean', b: 'b _____ n', a: 'ea', zh: '豆子'}, {w: 'leaf', b: 'l _____ f', a: 'ea', zh: '葉子'}, {w: 'seat', b: 's _____ t', a: 'ea', zh: '座位'}, {w: 'jeep', b: 'j _____ p', a: 'ee', zh: '吉普車'}, {w: 'bee', b: 'b _____', a: 'ee', zh: '蜜蜂'}, {w: 'weed', b: 'w _____ d', a: 'ee', zh: '雜草'}, {w: 'alley', b: 'a l l _____', a: 'ey', zh: '小巷'}, {w: 'hockey', b: 'h o c k _____', a: 'ey', zh: '曲棍球'}, {w: 'key', b: 'k _____', a: 'ey', zh: '鑰匙'},
-            {w: 'die', b: 'd _____', a: 'ie', zh: '凋零'}, {w: 'pie', b: 'p _____', a: 'ie', zh: '派'}, {w: 'tie', b: 't _____', a: 'ie', zh: '領帶'}, {w: 'high', b: 'h _____', a: 'igh', zh: '高的'}, {w: 'knight', b: 'k n _____ t', a: 'igh', zh: '騎士'}, {w: 'light', b: 'l _____ t', a: 'igh', zh: '燈光'}, {w: 'vine', b: 'v _____ n e', a: 'i', zh: '藤蔓'}, {w: 'ice', b: '_____ c e', a: 'i', zh: '冰塊'}, {w: 'time', b: 't _____ m e', a: 'i', zh: '時間'},
-            {w: 'soap', b: 's _____ p', a: 'oa', zh: '肥皂'}, {w: 'boat', b: 'b _____ t', a: 'oa', zh: '小船'}, {w: 'road', b: 'r _____ d', a: 'oa', zh: '道路'}, {w: 'toe', b: 't _____', a: 'oe', zh: '腳趾'}, {w: 'doe', b: 'd _____', a: 'oe', zh: '母鹿'}, {w: 'hoe', b: 'h _____', a: 'oe', zh: '鋤頭'}, {w: 'bone', b: 'b _____ n e', a: 'o', zh: '骨頭'}, {w: 'mole', b: 'm _____ l e', a: 'o', zh: '鼴鼠'}, {w: 'rope', b: 'r _____ p e', a: 'o', zh: '繩索'},
-            {w: 'pew', b: 'p _____', a: 'ew', zh: '長椅'}, {w: 'new', b: 'n _____', a: 'ew', zh: '新的'}, {w: 'stew', b: 's t _____', a: 'ew', zh: '燉菜'}, {w: 'hue', b: 'h _____', a: 'ue', zh: '色彩'}, {w: 'cue', b: 'c _____', a: 'ue', zh: '提示'}, {w: 'rescue', b: 'r e s c _____', a: 'ue', zh: '救援'}, {w: 'huge', b: 'h _____ g e', a: 'u', zh: '巨大的'}, {w: 'cute', b: 'c _____ t e', a: 'u', zh: '可愛的'}, {w: 'tube', b: 't _____ b e', a: 'u', zh: '管子'}
+            {w: 'maid', b: 'm ????? d', a: 'ai', zh: '女僕'}, {w: 'paint', b: 'p ????? n t', a: 'ai', zh: '畫畫'}, {w: 'rain', b: 'r ????? n', a: 'ai', zh: '雨'}, {w: 'bay', b: 'b ?????', a: 'ay', zh: '海灣'}, {w: 'hay', b: 'h ?????', a: 'ay', zh: '乾草'}, {w: 'pay', b: 'p ?????', a: 'ay', zh: '支付'}, {w: 'cake', b: 'c ????? k e', a: 'a', zh: '蛋糕'}, {w: 'gate', b: 'g ????? t e', a: 'a', zh: '大門'}, {w: 'tape', b: 't ????? p e', a: 'a', zh: '膠帶'},
+            {w: 'bean', b: 'b ????? n', a: 'ea', zh: '豆子'}, {w: 'leaf', b: 'l ????? f', a: 'ea', zh: '葉子'}, {w: 'seat', b: 's ????? t', a: 'ea', zh: '座位'}, {w: 'jeep', b: 'j ????? p', a: 'ee', zh: '吉普車'}, {w: 'bee', b: 'b ?????', a: 'ee', zh: '蜜蜂'}, {w: 'weed', b: 'w ????? d', a: 'ee', zh: '雜草'}, {w: 'alley', b: 'a l l ?????', a: 'ey', zh: '小巷'}, {w: 'hockey', b: 'h o c k ?????', a: 'ey', zh: '曲棍球'}, {w: 'key', b: 'k ?????', a: 'ey', zh: '鑰匙'},
+            {w: 'die', b: 'd ?????', a: 'ie', zh: '凋零'}, {w: 'pie', b: 'p ?????', a: 'ie', zh: '派'}, {w: 'tie', b: 't ?????', a: 'ie', zh: '領帶'}, {w: 'high', b: 'h ?????', a: 'igh', zh: '高的'}, {w: 'knight', b: 'k n ????? t', a: 'igh', zh: '騎士'}, {w: 'light', b: 'l ????? t', a: 'igh', zh: '燈光'}, {w: 'vine', b: 'v ????? n e', a: 'i', zh: '藤蔓'}, {w: 'ice', b: '????? c e', a: 'i', zh: '冰塊'}, {w: 'time', b: 't ????? m e', a: 'i', zh: '時間'},
+            {w: 'soap', b: 's ????? p', a: 'oa', zh: '肥皂'}, {w: 'boat', b: 'b ????? t', a: 'oa', zh: '小船'}, {w: 'road', b: 'r ????? d', a: 'oa', zh: '道路'}, {w: 'toe', b: 't ?????', a: 'oe', zh: '腳趾'}, {w: 'doe', b: 'd ?????', a: 'oe', zh: '母鹿'}, {w: 'hoe', b: 'h ?????', a: 'oe', zh: '鋤頭'}, {w: 'bone', b: 'b ????? n e', a: 'o', zh: '骨頭'}, {w: 'mole', b: 'm ????? l e', a: 'o', zh: '鼴鼠'}, {w: 'rope', b: 'r ????? p e', a: 'o', zh: '繩索'},
+            {w: 'pew', b: 'p ?????', a: 'ew', zh: '長椅'}, {w: 'new', b: 'n ?????', a: 'ew', zh: '新的'}, {w: 'stew', b: 's t ?????', a: 'ew', zh: '燉菜'}, {w: 'hue', b: 'h ?????', a: 'ue', zh: '色彩'}, {w: 'cue', b: 'c ?????', a: 'ue', zh: '提示'}, {w: 'rescue', b: 'r e s c ?????', a: 'ue', zh: '救援'}, {w: 'huge', b: 'h ????? g e', a: 'u', zh: '巨大的'}, {w: 'cute', b: 'c ????? t e', a: 'u', zh: '可愛的'}, {w: 'tube', b: 't ????? b e', a: 'u', zh: '管子'}
         ];
         const longGameAnswers = ['ai','ay','a','ea','ee','ey','ie','igh','i','oa','oe','o','ew','ue','u'];
         const shortGameWords = [
-            {w: 'pan', b: 'p _____ n', a: 'a', zh: '平底鍋'}, {w: 'can', b: 'c _____ n', a: 'a', zh: '罐頭'}, {w: 'fan', b: 'f _____ n', a: 'a', zh: '風扇'}, {w: 'map', b: 'm _____ p', a: 'a', zh: '地圖'}, {w: 'cap', b: 'c _____ p', a: 'a', zh: '帽子'}, {w: 'tap', b: 't _____ p', a: 'a', zh: '輕敲'}, {w: 'hat', b: 'h _____ t', a: 'a', zh: '帽子'}, {w: 'bat', b: 'b _____ t', a: 'a', zh: '蝙蝠'}, {w: 'fat', b: 'f _____ t', a: 'a', zh: '胖的'},
-            {w: 'bed', b: 'b _____ d', a: 'e', zh: '床'}, {w: 'red', b: 'r _____ d', a: 'e', zh: '紅色'}, {w: 'Ted', b: 'T _____ d', a: 'e', zh: '泰德'}, {w: 'pen', b: 'p _____ n', a: 'e', zh: '筆'}, {w: 'hen', b: 'h _____ n', a: 'e', zh: '母雞'}, {w: 'ten', b: 't _____ n', a: 'e', zh: '十'}, {w: 'jet', b: 'j _____ t', a: 'e', zh: '噴射機'}, {w: 'pet', b: 'p _____ t', a: 'e', zh: '寵物'}, {w: 'wet', b: 'w _____ t', a: 'e', zh: '濕的'},
-            {w: 'wig', b: 'w _____ g', a: 'i', zh: '假髮'}, {w: 'big', b: 'b _____ g', a: 'i', zh: '大的'}, {w: 'pig', b: 'p _____ g', a: 'i', zh: '豬'}, {w: 'pin', b: 'p _____ n', a: 'i', zh: '大頭針'}, {w: 'bin', b: 'b _____ n', a: 'i', zh: '垃圾桶'}, {w: 'fin', b: 'f _____ n', a: 'i', zh: '魚鰭'}, {w: 'rip', b: 'r _____ p', a: 'i', zh: '撕裂'}, {w: 'dip', b: 'd _____ p', a: 'i', zh: '沾'}, {w: 'hip', b: 'h _____ p', a: 'i', zh: '臀部'},
-            {w: 'top', b: 't _____ p', a: 'o', zh: '頂部'}, {w: 'cop', b: 'c _____ p', a: 'o', zh: '警察'}, {w: 'mop', b: 'm _____ p', a: 'o', zh: '拖把'}, {w: 'dot', b: 'd _____ t', a: 'o', zh: '點'}, {w: 'hot', b: 'h _____ t', a: 'o', zh: '熱的'}, {w: 'pot', b: 'p _____ t', a: 'o', zh: '鍋子'}, {w: 'box', b: 'b _____ x', a: 'o', zh: '箱子'}, {w: 'fox', b: 'f _____ x', a: 'o', zh: '狐狸'}, {w: 'pox', b: 'p _____ x', a: 'o', zh: '痘'},
-            {w: 'rub', b: 'r _____ b', a: 'u', zh: '摩擦'}, {w: 'cub', b: 'c _____ b', a: 'u', zh: '幼獸'}, {w: 'tub', b: 't _____ b', a: 'u', zh: '浴缸'}, {w: 'hug', b: 'h _____ g', a: 'u', zh: '擁抱'}, {w: 'bug', b: 'b _____ g', a: 'u', zh: '蟲'}, {w: 'mug', b: 'm _____ g', a: 'u', zh: '馬克杯'}, {w: 'run', b: 'r _____ n', a: 'u', zh: '跑'}, {w: 'bun', b: 'b _____ n', a: 'u', zh: '小圓麵包'}, {w: 'sun', b: 's _____ n', a: 'u', zh: '太陽'}
+            {w: 'pan', b: 'p ????? n', a: 'a', zh: '平底鍋'}, {w: 'can', b: 'c ????? n', a: 'a', zh: '罐頭'}, {w: 'fan', b: 'f ????? n', a: 'a', zh: '風扇'}, {w: 'map', b: 'm ????? p', a: 'a', zh: '地圖'}, {w: 'cap', b: 'c ????? p', a: 'a', zh: '帽子'}, {w: 'tap', b: 't ????? p', a: 'a', zh: '輕敲'}, {w: 'hat', b: 'h ????? t', a: 'a', zh: '帽子'}, {w: 'bat', b: 'b ????? t', a: 'a', zh: '蝙蝠'}, {w: 'fat', b: 'f ????? t', a: 'a', zh: '胖的'},
+            {w: 'bed', b: 'b ????? d', a: 'e', zh: '床'}, {w: 'red', b: 'r ????? d', a: 'e', zh: '紅色'}, {w: 'Ted', b: 'T ????? d', a: 'e', zh: '泰德'}, {w: 'pen', b: 'p ????? n', a: 'e', zh: '筆'}, {w: 'hen', b: 'h ????? n', a: 'e', zh: '母雞'}, {w: 'ten', b: 't ????? n', a: 'e', zh: '十'}, {w: 'jet', b: 'j ????? t', a: 'e', zh: '噴射機'}, {w: 'pet', b: 'p ????? t', a: 'e', zh: '寵物'}, {w: 'wet', b: 'w ????? t', a: 'e', zh: '濕的'},
+            {w: 'wig', b: 'w ????? g', a: 'i', zh: '假髮'}, {w: 'big', b: 'b ????? g', a: 'i', zh: '大的'}, {w: 'pig', b: 'p ????? g', a: 'i', zh: '豬'}, {w: 'pin', b: 'p ????? n', a: 'i', zh: '大頭針'}, {w: 'bin', b: 'b ????? n', a: 'i', zh: '垃圾桶'}, {w: 'fin', b: 'f ????? n', a: 'i', zh: '魚鰭'}, {w: 'rip', b: 'r ????? p', a: 'i', zh: '撕裂'}, {w: 'dip', b: 'd ????? p', a: 'i', zh: '沾'}, {w: 'hip', b: 'h ????? p', a: 'i', zh: '臀部'},
+            {w: 'top', b: 't ????? p', a: 'o', zh: '頂部'}, {w: 'cop', b: 'c ????? p', a: 'o', zh: '警察'}, {w: 'mop', b: 'm ????? p', a: 'o', zh: '拖把'}, {w: 'dot', b: 'd ????? t', a: 'o', zh: '點'}, {w: 'hot', b: 'h ????? t', a: 'o', zh: '熱的'}, {w: 'pot', b: 'p ????? t', a: 'o', zh: '鍋子'}, {w: 'box', b: 'b ????? x', a: 'o', zh: '箱子'}, {w: 'fox', b: 'f ????? x', a: 'o', zh: '狐狸'}, {w: 'pox', b: 'p ????? x', a: 'o', zh: '痘'},
+            {w: 'rub', b: 'r ????? b', a: 'u', zh: '摩擦'}, {w: 'cub', b: 'c ????? b', a: 'u', zh: '幼獸'}, {w: 'tub', b: 't ????? b', a: 'u', zh: '浴缸'}, {w: 'hug', b: 'h ????? g', a: 'u', zh: '擁抱'}, {w: 'bug', b: 'b ????? g', a: 'u', zh: '蟲'}, {w: 'mug', b: 'm ????? g', a: 'u', zh: '馬克杯'}, {w: 'run', b: 'r ????? n', a: 'u', zh: '跑'}, {w: 'bun', b: 'b ????? n', a: 'u', zh: '小圓麵包'}, {w: 'sun', b: 's ????? n', a: 'u', zh: '太陽'}
         ];
         const shortGameAnswers = ['a', 'e', 'i', 'o', 'u'];
         const mixedGameWords = [...longGameWords, ...shortGameWords];
@@ -377,8 +423,6 @@
         
         let gameScore = 0; let gameTimeLeft = 300; let gameTimerInterval = null;
         let isGameActive = false; let currentGameObj = null; 
-        
-        // 【新增】發音遊戲題庫池變數
         let gameWordsPool = [];
 
         let verbListShuffled = [];
@@ -386,16 +430,22 @@
         let verbScoreCount = 0;
         let currentVerbObj = null;
 
+        // 拼字遊戲變數
+        let spellMode = 'long';
+        let spellScore = 0; let spellTimeLeft = 300; let spellTimerInterval = null;
+        let isSpellActive = false; let currentSpellObj = null;
+        let spellCorrectChunks = []; let spellCurrentIndex = 0; let spellPool = [];
+
         function getActiveExamples() { 
             if(currentMode === 'long') return longExamples;
             if(currentMode === 'short') return shortExamples;
             return mixedExamples;
         }
 
-        // --- 發音區邏輯 ---
+        // --- 第一章：發音區邏輯 ---
         function setMode(mode) {
             currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('#tab-phonics .mode-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + mode).classList.add('active');
             const modeTexts = { 'long': '長母音', 'short': '短母音', 'mixed': '綜合挑戰' };
             const mText = modeTexts[mode];
@@ -456,7 +506,6 @@
             document.getElementById('game-start-screen').style.display = 'none';
             document.getElementById('game-board').style.display = 'block';
 
-            // 【新增】初始化題庫池並打亂
             if (currentMode === 'short') { gameWordsPool = [...shortGameWords]; }
             else if (currentMode === 'mixed') { gameWordsPool = [...mixedGameWords]; }
             else { gameWordsPool = [...longGameWords]; }
@@ -482,7 +531,6 @@
         function nextGameQuestion() {
             if(!isGameActive) return;
 
-            // 【新增】如果題庫抽光了，自動重新填滿並打亂 (避免5分鐘內全部寫完當機)
             if (gameWordsPool.length === 0) {
                 if (currentMode === 'short') { gameWordsPool = [...shortGameWords]; }
                 else if (currentMode === 'mixed') { gameWordsPool = [...mixedGameWords]; }
@@ -490,7 +538,6 @@
                 gameWordsPool.sort(() => 0.5 - Math.random());
             }
 
-            // 從池子裡抽出一題並移除，確保不重複
             currentGameObj = gameWordsPool.pop(); 
 
             let gAnswers = longGameAnswers;
@@ -532,7 +579,7 @@
         }
         function playGameHint() { if(currentGameObj && isGameActive) speak(currentGameObj.w, 'en-US', 0.8); }
 
-        // --- 動詞短句練習邏輯 ---
+        // --- 第二章：動詞短句練習邏輯 ---
         function playVerb(index, btnElement) {
             if (isCooldown) return; 
             isCooldown = true; btnElement.classList.add('cooldown');
@@ -570,7 +617,7 @@
             document.getElementById('verb-progress').innerText = `📊 第 ${verbCurrentIdx + 1} 題 / 共 9 題`;
             document.getElementById('verb-score').innerText = `🏆 得分: ${verbScoreCount} / 9`;
 
-            const blankSentence = currentVerbObj.sentence.replace(currentVerbObj.v, '_____');
+            const blankSentence = currentVerbObj.sentence.replace(currentVerbObj.v, '?????');
             document.getElementById('verb-sentence').innerText = blankSentence;
             document.getElementById('verb-zh').innerText = `(${currentVerbObj.zh})`;
             document.getElementById('verb-feedback').innerText = '請選擇正確的動詞：';
@@ -594,37 +641,157 @@
             const feedbackText = document.getElementById('verb-feedback');
             
             if (ans === currentVerbObj.v) {
-                btn.style.backgroundColor = '#2ecc71';
-                btn.style.color = 'white';
-                btn.style.borderColor = '#2ecc71';
-                
-                feedbackText.innerText = '🎉 答對了！';
-                feedbackText.style.color = '#27ae60';
+                btn.style.backgroundColor = '#2ecc71'; btn.style.color = 'white'; btn.style.borderColor = '#2ecc71';
+                feedbackText.innerText = '🎉 答對了！'; feedbackText.style.color = '#27ae60';
                 
                 verbScoreCount++;
                 document.getElementById('verb-score').innerText = `🏆 得分: ${verbScoreCount} / 9`;
-                
                 document.getElementById('verb-sentence').innerText = currentVerbObj.sentence;
-
                 document.querySelectorAll('#verb-options .game-opt-btn').forEach(b => b.disabled = true);
 
                 verbCurrentIdx++;
-                setTimeout(() => {
-                    loadVerbQuestion();
-                }, 1500);
+                setTimeout(() => { loadVerbQuestion(); }, 1500);
 
             } else {
-                btn.style.backgroundColor = '#e74c3c';
-                btn.style.color = 'white';
-                btn.style.borderColor = '#e74c3c';
-                btn.disabled = true;
-
-                feedbackText.innerText = '❌ 答錯囉，再試一次！';
-                feedbackText.style.color = '#e74c3c';
+                btn.style.backgroundColor = '#e74c3c'; btn.style.color = 'white'; btn.style.borderColor = '#e74c3c'; btn.disabled = true;
+                feedbackText.innerText = '❌ 答錯囉，再試一次！'; feedbackText.style.color = '#e74c3c';
             }
         }
 
-        // --- 翻譯邏輯 ---
+        // --- 第三章：拼字遊戲邏輯 (NEW) ---
+        function setSpellMode(mode) {
+            spellMode = mode;
+            document.querySelectorAll('#tab-spelling .mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('spell-btn-' + mode).classList.add('active');
+            forceEndSpellGame();
+        }
+
+        function forceEndSpellGame() {
+            isSpellActive = false; clearInterval(spellTimerInterval); spellTimeLeft = 300;
+            document.getElementById('spell-timer').innerText = `⏳ 05:00`;
+            document.getElementById('spell-score').innerText = `🏆 拼對: 0`;
+            document.getElementById('spell-board').style.display = 'none';
+            document.getElementById('spell-start-screen').style.display = 'block';
+        }
+
+        function getSpellingWords(mode) {
+            let pool = [];
+            let dicts = [];
+            if (mode === 'long') dicts = [longExamples];
+            else if (mode === 'short') dicts = [shortExamples];
+            else dicts = [longExamples, shortExamples];
+
+            dicts.forEach(dict => {
+                ['A','E','I','O','U'].forEach(v => { pool = pool.concat(dict[v]); });
+            });
+            return pool;
+        }
+
+        function startSpellGame() {
+            spellScore = 0; spellTimeLeft = 300; isSpellActive = true;
+            spellPool = getSpellingWords(spellMode).sort(() => 0.5 - Math.random());
+            
+            document.getElementById('spell-score').innerText = `🏆 拼對: 0`;
+            document.getElementById('spell-timer').innerText = `⏳ 05:00`;
+            document.getElementById('spell-start-screen').style.display = 'none';
+            document.getElementById('spell-board').style.display = 'block';
+            
+            nextSpellQuestion();
+            
+            if (spellTimerInterval) clearInterval(spellTimerInterval);
+            spellTimerInterval = setInterval(() => {
+                spellTimeLeft--; document.getElementById('spell-timer').innerText = `⏳ ${formatTime(spellTimeLeft)}`;
+                if (spellTimeLeft <= 0) { endSpellGame(); }
+            }, 1000);
+        }
+
+        function endSpellGame() {
+            isSpellActive = false; clearInterval(spellTimerInterval);
+            document.getElementById('spell-board').style.display = 'none';
+            document.getElementById('spell-start-screen').style.display = 'block';
+            document.getElementById('spell-end-msg').innerText = `⏰ 時間到！\n恭喜你總共拼對了 ${spellScore} 個單字！`;
+            document.getElementById('spell-end-msg').style.display = 'block';
+            document.querySelector('#tab-spelling .game-start-btn').innerText = '🔄 再挑戰一次';
+        }
+
+        function nextSpellQuestion() {
+            if (!isSpellActive) return;
+            if (spellPool.length === 0) {
+                spellPool = getSpellingWords(spellMode).sort(() => 0.5 - Math.random());
+            }
+            
+            currentSpellObj = spellPool.pop();
+            spellCorrectChunks = [...currentSpellObj.c];
+            spellCurrentIndex = 0;
+
+            document.getElementById('spell-zh').innerText = `(${currentSpellObj.zh})`;
+            renderSpellSlots();
+
+            let scrambled = [...spellCorrectChunks].sort(() => 0.5 - Math.random());
+            const optsDiv = document.getElementById('spell-options');
+            optsDiv.innerHTML = '';
+            scrambled.forEach((chunk) => {
+                const btn = document.createElement('button');
+                btn.className = 'game-opt-btn';
+                btn.innerText = chunk;
+                btn.onclick = function() { checkSpellChunk(chunk, this); };
+                optsDiv.appendChild(btn);
+            });
+
+            setTimeout(() => { if(isSpellActive) speak(currentSpellObj.en, 'en-US', 0.8); }, 500);
+        }
+
+        function renderSpellSlots() {
+            const slotsDiv = document.getElementById('spell-slots');
+            slotsDiv.innerHTML = '';
+            spellCorrectChunks.forEach((chunk, index) => {
+                const span = document.createElement('span');
+                span.className = 'spell-slot';
+                if (index < spellCurrentIndex) {
+                    span.innerText = spellCorrectChunks[index];
+                    span.style.borderBottomColor = '#27ae60'; // 填對變綠色底線
+                } else {
+                    span.innerText = ''; // 還沒填入保持空白
+                }
+                slotsDiv.appendChild(span);
+            });
+        }
+
+        function checkSpellChunk(chunk, btn) {
+            if (!isSpellActive) return;
+            const feedbackText = document.getElementById('spell-feedback');
+
+            if (chunk === spellCorrectChunks[spellCurrentIndex]) {
+                btn.style.visibility = 'hidden'; 
+                spellCurrentIndex++;
+                renderSpellSlots();
+                
+                if (spellCurrentIndex === spellCorrectChunks.length) {
+                    feedbackText.innerText = '🎉 拼對了！';
+                    feedbackText.style.color = '#27ae60';
+                    spellScore++;
+                    document.getElementById('spell-score').innerText = `🏆 拼對: ${spellScore}`;
+                    speak(currentSpellObj.en, 'en-US', 0.8);
+                    
+                    setTimeout(() => { 
+                        if(isSpellActive) {
+                            feedbackText.innerText = '請依序點擊拼出單字：';
+                            feedbackText.style.color = '#7f8c8d';
+                            nextSpellQuestion(); 
+                        }
+                    }, 1500);
+                }
+            } else {
+                btn.style.backgroundColor = '#e74c3c'; btn.style.color = 'white'; btn.style.borderColor = '#e74c3c';
+                setTimeout(() => {
+                    btn.style.backgroundColor = '#fff'; btn.style.color = '#34495e'; btn.style.borderColor = '#bdc3c7';
+                }, 400);
+                speak(currentSpellObj.en, 'en-US', 0.8);
+            }
+        }
+        function playSpellHint() { if(currentSpellObj && isSpellActive) speak(currentSpellObj.en, 'en-US', 0.8); }
+
+        // --- 第四章：翻譯邏輯 ---
         async function speakCustomWord() {
             const transDisplay = document.getElementById('translation-display');
             const word = document.getElementById('custom-word').value.trim();
