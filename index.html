@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字母拼讀發音練習 (牛津版)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 15px;
+            margin: 0;
+        }
+        h1 { color: #2c3e50; margin-bottom: 5px; font-size: 1.8rem; }
+        .subtitle { color: #7f8c8d; margin-bottom: 20px; font-size: 0.9rem; }
+        
+        /* --- 模式切換按鈕 --- */
+        .mode-selector {
+            margin: 10px auto 20px auto;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .mode-btn {
+            font-size: 1.1rem; padding: 8px 18px; cursor: pointer;
+            border: 3px solid transparent; border-radius: 50px;
+            background-color: #ecf0f1; color: #7f8c8d; font-weight: bold; transition: all 0.3s ease;
+        }
+        .mode-btn.active {
+            background-color: #fff; color: #e67e22; border-color: #e67e22;
+            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.2); transform: scale(1.05);
+        }
+
+        /* 基礎按鈕樣式 */
+        .vowel-btn, .drill-vowel-btn {
+            cursor: pointer; border: none; border-radius: 12px; color: #fff;
+            font-weight: bold; transition: transform 0.1s, opacity 0.3s;
+        }
+        .vowel-btn:active, .drill-vowel-btn:active { transform: scale(0.95); }
+        .cooldown { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+
+        /* 顏色定義 */
+        .bg-a { background-color: #FF6B6B; }
+        .bg-e { background-color: #4ECDC4; }
+        .bg-i { background-color: #45B7D1; }
+        .bg-o { background-color: #F9CA24; }
+        .bg-u { background-color: #9B59B6; }
+
+        /* --- 區塊共用樣式 --- */
+        .section-container {
+            background-color: #fff; padding: 20px; border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 600px; margin: 15px auto;
+        }
+        .vowel-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        .vowel-btn { font-size: 1.8rem; padding: 12px 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        #example-display, #drill-display { font-size: 1.5rem; color: #e74c3c; font-weight: bold; min-height: 40px; margin-top: 10px; }
+        .spell-text { color: #2980b9; font-family: monospace; font-size: 1.6rem; letter-spacing: 2px; }
+
+        /* 獨立特訓區 */
+        .drill-section { background-color: #fff9e6; border: 3px dashed #F9CA24; }
+        .drill-vowel-btn { font-size: 1.2rem; padding: 8px 18px; opacity: 0.4; }
+        .drill-vowel-btn.active { opacity: 1; box-shadow: 0 0 10px rgba(0,0,0,0.3); transform: scale(1.1); }
+        .play-drill-btn {
+            font-size: 1.2rem; padding: 12px 20px; background-color: #2ecc71; color: white;
+            border: none; border-radius: 10px; cursor: pointer; margin-top: 10px; font-weight: bold; width: 100%;
+        }
+        .play-drill-btn:active { background-color: #27ae60; transform: scale(0.98); }
+
+        /* --- 限時遊戲區塊樣式 --- */
+        .game-section { background-color: #e8f8f5; border: 3px solid #1abc9c; }
+        
+        .game-stats {
+            display: flex; justify-content: space-around; font-size: 1.3rem; 
+            font-weight: bold; margin-bottom: 15px; background-color: #fff;
+            padding: 10px; border-radius: 10px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        #game-timer { color: #e67e22; }
+        #game-score { color: #27ae60; }
+
+        .game-word-display {
+            font-size: 3rem; letter-spacing: 6px; font-weight: bold; color: #2c3e50;
+            margin: 10px 0 0 0; font-family: monospace;
+        }
+        .game-zh-display { font-size: 1.2rem; color: #7f8c8d; margin-bottom: 15px; font-weight: bold; }
+        .game-options-container { display: flex; justify-content: center; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+        .game-opt-btn {
+            font-size: 1.5rem; padding: 10px 25px; border: 2px solid #bdc3c7; background-color: #fff;
+            border-radius: 10px; cursor: pointer; font-weight: bold; color: #34495e; transition: all 0.2s;
+        }
+        .game-opt-btn:hover:not(:disabled) { border-color: #3498db; color: #3498db; }
+        .game-opt-btn:disabled { cursor: not-allowed; opacity: 0.9; }
+        .game-hint-btn {
+            font-size: 1rem; padding: 8px 15px; background-color: #f39c12; color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
+        }
+        .game-start-btn {
+            font-size: 1.3rem; padding: 15px 30px; background-color: #e74c3c; color: white;
+            border: none; border-radius: 12px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* --- 自訂輸入區 --- */
+        input[type="text"] { font-size: 1.1rem; padding: 10px; width: 50%; border: 2px solid #ddd; border-radius: 8px; outline: none; }
+        button.speak-btn { font-size: 1.1rem; padding: 10px 15px; background-color: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; margin-left: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>字母拼讀發音練習</h1>
+    <p class="subtitle">聽音辨字，加強自然發音記憶</p>
+
+    <!-- 模式切換區塊 -->
+    <div class="mode-selector">
+        <button id="btn-long" class="mode-btn active" onclick="setMode('long')">🌟 長母音</button>
+        <button id="btn-short" class="mode-btn" onclick="setMode('short')">⭐ 短母音</button>
+        <button id="btn-mixed" class="mode-btn" onclick="setMode('mixed')">🔥 綜合挑戰</button>
+    </div>
+
+    <!-- 區塊 1：綜合練習區 -->
+    <div class="section-container">
+        <h2 id="title-main" style="font-size: 1.2rem;">🎲 區塊 1: 綜合順序 (視覺拆解+慢速)</h2>
+        <div class="vowel-container">
+            <button class="vowel-btn bg-a" onclick="playVowel('A', this)">A</button>
+            <button class="vowel-btn bg-e" onclick="playVowel('E', this)">E</button>
+            <button class="vowel-btn bg-i" onclick="playVowel('I', this)">I</button>
+            <button class="vowel-btn bg-o" onclick="playVowel('O', this)">O</button>
+            <button class="vowel-btn bg-u" onclick="playVowel('U', this)">U</button>
+        </div>
+        <div id="example-display">請點擊上方字母！</div>
+    </div>
+
+    <!-- 區塊 2：獨立特訓區 -->
+    <div class="section-container drill-section">
+        <h2 id="title-drill" style="font-size: 1.2rem;">🎯 區塊 2: 單一字母特訓 (純單字)</h2>
+        <div class="vowel-container" style="gap: 8px;">
+            <button id="drill-a" class="drill-vowel-btn bg-a active" onclick="setDrillVowel('A')">A</button>
+            <button id="drill-e" class="drill-vowel-btn bg-e" onclick="setDrillVowel('E')">E</button>
+            <button id="drill-i" class="drill-vowel-btn bg-i" onclick="setDrillVowel('I')">I</button>
+            <button id="drill-o" class="drill-vowel-btn bg-o" onclick="setDrillVowel('O')">O</button>
+            <button id="drill-u" class="drill-vowel-btn bg-u" onclick="setDrillVowel('U')">U</button>
+        </div>
+        <button class="play-drill-btn" onclick="playDrillWord(this)">🔊 下一個單字</button>
+        <div id="drill-display">準備練習 A！</div>
+    </div>
+
+    <!-- 區塊 3：限時填空遊戲區 -->
+    <div class="section-container game-section">
+        <h2 id="title-game" style="font-size: 1.2rem;">🎮 區塊 3: 限時挑戰 (長母音)</h2>
+        
+        <div class="game-stats">
+            <span id="game-timer">⏳ 05:00</span>
+            <span id="game-score">🏆 答對: 0</span>
+        </div>
+
+        <!-- 遊戲開始畫面 -->
+        <div id="game-start-screen">
+            <p id="game-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
+            <button class="game-start-btn" onclick="startGame()" id="start-btn-text">▶️ 開始 5 分鐘測驗</button>
+        </div>
+
+        <!-- 遊戲進行畫面 (預設隱藏) -->
+        <div id="game-board" style="display: none;">
+            <button class="game-hint-btn" onclick="playGameHint()">🔊 再聽一次發音</button>
+            <div class="game-word-display" id="game-word">_ _ _ _</div>
+            <div class="game-zh-display" id="game-zh"></div>
+            <div id="game-feedback" style="font-weight: bold; color: #7f8c8d;">請選擇缺少的母音：</div>
+            <div class="game-options-container" id="game-options"></div>
+        </div>
+    </div>
+
+    <!-- 區塊 4：自訂單字區 -->
+    <div class="section-container">
+        <h2 style="font-size: 1.2rem;">🔍 區塊 4: 自訂發音翻譯</h2>
+        <input type="text" id="custom-word" placeholder="Apple" onkeydown="if(event.key === 'Enter') speakCustomWord()">
+        <button class="speak-btn" onclick="speakCustomWord()">唸出</button>
+        <div id="translation-display" style="margin-top: 15px; font-size: 1.2rem; color: #27ae60; font-weight: bold;"></div>
+    </div>
+
+    <script>
+        // --- 字典區 ---
+        const longExamples = {
+            'A': [ {en: 'maid', zh: '女僕', c: ['m','ai','d']}, {en: 'paint', zh: '畫畫', c: ['p','ai','n','t']}, {en: 'rain', zh: '雨', c: ['r','ai','n']}, {en: 'bay', zh: '海灣', c: ['b','ay']}, {en: 'hay', zh: '乾草', c: ['h','ay']}, {en: 'pay', zh: '支付', c: ['p','ay']}, {en: 'cake', zh: '蛋糕', c: ['c','a','k','e']}, {en: 'gate', zh: '大門', c: ['g','a','t','e']}, {en: 'tape', zh: '膠帶', c: ['t','a','p','e']} ],
+            'E': [ {en: 'bean', zh: '豆子', c: ['b','ea','n']}, {en: 'leaf', zh: '葉子', c: ['l','ea','f']}, {en: 'seat', zh: '座位', c: ['s','ea','t']}, {en: 'jeep', zh: '吉普車', c: ['j','ee','p']}, {en: 'bee', zh: '蜜蜂', c: ['b','ee']}, {en: 'weed', zh: '雜草', c: ['w','ee','d']}, {en: 'alley', zh: '小巷', c: ['a','ll','ey']}, {en: 'hockey', zh: '曲棍球', c: ['h','o','ck','ey']}, {en: 'key', zh: '鑰匙', c: ['k','ey']} ],
+            'I': [ {en: 'die', zh: '凋零', c: ['d','ie']}, {en: 'pie', zh: '派', c: ['p','ie']}, {en: 'tie', zh: '領帶', c: ['t','ie']}, {en: 'high', zh: '高的', c: ['h','igh']}, {en: 'knight', zh: '騎士', c: ['kn','igh','t']}, {en: 'light', zh: '燈光', c: ['l','igh','t']}, {en: 'vine', zh: '藤蔓', c: ['v','i','n','e']}, {en: 'ice', zh: '冰塊', c: ['i','c','e']}, {en: 'time', zh: '時間', c: ['t','i','m','e']} ],
+            'O': [ {en: 'soap', zh: '肥皂', c: ['s','oa','p']}, {en: 'boat', zh: '小船', c: ['b','oa','t']}, {en: 'road', zh: '道路', c: ['r','oa','d']}, {en: 'toe', zh: '腳趾', c: ['t','oe']}, {en: 'doe', zh: '母鹿', c: ['d','oe']}, {en: 'hoe', zh: '鋤頭', c: ['h','oe']}, {en: 'bone', zh: '骨頭', c: ['b','o','n','e']}, {en: 'mole', zh: '鼴鼠', c: ['m','o','l','e']}, {en: 'rope', zh: '繩索', c: ['r','o','p','e']} ],
+            'U': [ {en: 'pew', zh: '長椅', c: ['p','ew']}, {en: 'new', zh: '新的', c: ['n','ew']}, {en: 'stew', zh: '燉菜', c: ['s','t','ew']}, {en: 'hue', zh: '色彩', c: ['h','ue']}, {en: 'cue', zh: '提示', c: ['c','ue']}, {en: 'rescue', zh: '救援', c: ['r','e','s','c','ue']}, {en: 'huge', zh: '巨大的', c: ['h','u','g','e']}, {en: 'cute', zh: '可愛的', c: ['c','u','t','e']}, {en: 'tube', zh: '管子', c: ['t','u','b','e']} ]
+        };
+        const shortExamples = {
+            'A': [ {en: 'pan', zh: '平底鍋', c: ['p','a','n']}, {en: 'can', zh: '罐頭', c: ['c','a','n']}, {en: 'fan', zh: '風扇', c: ['f','a','n']}, {en: 'map', zh: '地圖', c: ['m','a','p']}, {en: 'cap', zh: '帽子', c: ['c','a','p']}, {en: 'tap', zh: '輕敲', c: ['t','a','p']}, {en: 'hat', zh: '帽子', c: ['h','a','t']}, {en: 'bat', zh: '蝙蝠', c: ['b','a','t']}, {en: 'fat', zh: '胖的', c: ['f','a','t']} ],
+            'E': [ {en: 'bed', zh: '床', c: ['b','e','d']}, {en: 'red', zh: '紅色', c: ['r','e','d']}, {en: 'Ted', zh: '泰德', c: ['T','e','d']}, {en: 'pen', zh: '筆', c: ['p','e','n']}, {en: 'hen', zh: '母雞', c: ['h','e','n']}, {en: 'ten', zh: '十', c: ['t','e','n']}, {en: 'jet', zh: '噴射機', c: ['j','e','t']}, {en: 'pet', zh: '寵物', c: ['p','e','t']}, {en: 'wet', zh: '濕的', c: ['w','e','t']} ],
+            'I': [ {en: 'wig', zh: '假髮', c: ['w','i','g']}, {en: 'big', zh: '大的', c: ['b','i','g']}, {en: 'pig', zh: '豬', c: ['p','i','g']}, {en: 'pin', zh: '大頭針', c: ['p','i','n']}, {en: 'bin', zh: '垃圾桶', c: ['b','i','n']}, {en: 'fin', zh: '魚鰭', c: ['f','i','n']}, {en: 'rip', zh: '撕裂', c: ['r','i','p']}, {en: 'dip', zh: '沾', c: ['d','i','p']}, {en: 'hip', zh: '臀部', c: ['h','i','p']} ],
+            'O': [ {en: 'top', zh: '頂部', c: ['t','o','p']}, {en: 'cop', zh: '警察', c: ['c','o','p']}, {en: 'mop', zh: '拖把', c: ['m','o','p']}, {en: 'dot', zh: '點', c: ['d','o','t']}, {en: 'hot', zh: '熱的', c: ['h','o','t']}, {en: 'pot', zh: '鍋子', c: ['p','o','t']}, {en: 'box', zh: '箱子', c: ['b','o','x']}, {en: 'fox', zh: '狐狸', c: ['f','o','x']}, {en: 'pox', zh: '痘', c: ['p','o','x']} ],
+            'U': [ {en: 'rub', zh: '摩擦', c: ['r','u','b']}, {en: 'cub', zh: '幼獸', c: ['c','u','b']}, {en: 'tub', zh: '浴缸', c: ['t','u','b']}, {en: 'hug', zh: '擁抱', c: ['h','u','g']}, {en: 'bug', zh: '蟲', c: ['b','u','g']}, {en: 'mug', zh: '馬克杯', c: ['m','u','g']}, {en: 'run', zh: '跑', c: ['r','u','n']}, {en: 'bun', zh: '小圓麵包', c: ['b','u','n']}, {en: 'sun', zh: '太陽', c: ['s','u','n']} ]
+        };
+        const mixedExamples = { 'A':[], 'E':[], 'I':[], 'O':[], 'U':[] };
+        ['A','E','I','O','U'].forEach(v => { mixedExamples[v] = [...longExamples[v], ...shortExamples[v]]; });
+
+        // --- 遊戲字典區 ---
+        const longGameWords = [
+            {w: 'maid', b: 'm _ _ d', a: 'ai', zh: '女僕'}, {w: 'paint', b: 'p _ _ n t', a: 'ai', zh: '畫畫'}, {w: 'rain', b: 'r _ _ n', a: 'ai', zh: '雨'}, {w: 'bay', b: 'b _ _', a: 'ay', zh: '海灣'}, {w: 'hay', b: 'h _ _', a: 'ay', zh: '乾草'}, {w: 'pay', b: 'p _ _', a: 'ay', zh: '支付'}, {w: 'cake', b: 'c _ k e', a: 'a', zh: '蛋糕'}, {w: 'gate', b: 'g _ t e', a: 'a', zh: '大門'}, {w: 'tape', b: 't _ p e', a: 'a', zh: '膠帶'},
+            {w: 'bean', b: 'b _ _ n', a: 'ea', zh: '豆子'}, {w: 'leaf', b: 'l _ _ f', a: 'ea', zh: '葉子'}, {w: 'seat', b: 's _ _ t', a: 'ea', zh: '座位'}, {w: 'jeep', b: 'j _ _ p', a: 'ee', zh: '吉普車'}, {w: 'bee', b: 'b _ _', a: 'ee', zh: '蜜蜂'}, {w: 'weed', b: 'w _ _ d', a: 'ee', zh: '雜草'}, {w: 'alley', b: 'a l l _ _', a: 'ey', zh: '小巷'}, {w: 'hockey', b: 'h o c k _ _', a: 'ey', zh: '曲棍球'}, {w: 'key', b: 'k _ _', a: 'ey', zh: '鑰匙'},
+            {w: 'die', b: 'd _ _', a: 'ie', zh: '凋零'}, {w: 'pie', b: 'p _ _', a: 'ie', zh: '派'}, {w: 'tie', b: 't _ _', a: 'ie', zh: '領帶'}, {w: 'high', b: 'h _ _ _', a: 'igh', zh: '高的'}, {w: 'knight', b: 'k n _ _ _ t', a: 'igh', zh: '騎士'}, {w: 'light', b: 'l _ _ _ t', a: 'igh', zh: '燈光'}, {w: 'vine', b: 'v _ n e', a: 'i', zh: '藤蔓'}, {w: 'ice', b: '_ c e', a: 'i', zh: '冰塊'}, {w: 'time', b: 't _ m e', a: 'i', zh: '時間'},
+            {w: 'soap', b: 's _ _ p', a: 'oa', zh: '肥皂'}, {w: 'boat', b: 'b _ _ t', a: 'oa', zh: '小船'}, {w: 'road', b: 'r _ _ d', a: 'oa', zh: '道路'}, {w: 'toe', b: 't _ _', a: 'oe', zh: '腳趾'}, {w: 'doe', b: 'd _ _', a: 'oe', zh: '母鹿'}, {w: 'hoe', b: 'h _ _', a: 'oe', zh: '鋤頭'}, {w: 'bone', b: 'b _ n e', a: 'o', zh: '骨頭'}, {w: 'mole', b: 'm _ l e', a: 'o', zh: '鼴鼠'}, {w: 'rope', b: 'r _ p e', a: 'o', zh: '繩索'},
+            {w: 'pew', b: 'p _ _', a: 'ew', zh: '長椅'}, {w: 'new', b: 'n _ _', a: 'ew', zh: '新的'}, {w: 'stew', b: 's t _ _', a: 'ew', zh: '燉菜'}, {w: 'hue', b: 'h _ _', a: 'ue', zh: '色彩'}, {w: 'cue', b: 'c _ _', a: 'ue', zh: '提示'}, {w: 'rescue', b: 'r e s c _ _', a: 'ue', zh: '救援'}, {w: 'huge', b: 'h _ g e', a: 'u', zh: '巨大的'}, {w: 'cute', b: 'c _ t e', a: 'u', zh: '可愛的'}, {w: 'tube', b: 't _ b e', a: 'u', zh: '管子'}
+        ];
+        const longGameAnswers = ['ai','ay','a','ea','ee','ey','ie','igh','i','oa','oe','o','ew','ue','u'];
+
+        const shortGameWords = [
+            {w: 'pan', b: 'p _ n', a: 'a', zh: '平底鍋'}, {w: 'can', b: 'c _ n', a: 'a', zh: '罐頭'}, {w: 'fan', b: 'f _ n', a: 'a', zh: '風扇'}, {w: 'map', b: 'm _ p', a: 'a', zh: '地圖'}, {w: 'cap', b: 'c _ p', a: 'a', zh: '帽子'}, {w: 'tap', b: 't _ p', a: 'a', zh: '輕敲'}, {w: 'hat', b: 'h _ t', a: 'a', zh: '帽子'}, {w: 'bat', b: 'b _ t', a: 'a', zh: '蝙蝠'}, {w: 'fat', b: 'f _ t', a: 'a', zh: '胖的'},
+            {w: 'bed', b: 'b _ d', a: 'e', zh: '床'}, {w: 'red', b: 'r _ d', a: 'e', zh: '紅色'}, {w: 'Ted', b: 'T _ d', a: 'e', zh: '泰德'}, {w: 'pen', b: 'p _ n', a: 'e', zh: '筆'}, {w: 'hen', b: 'h _ n', a: 'e', zh: '母雞'}, {w: 'ten', b: 't _ n', a: 'e', zh: '十'}, {w: 'jet', b: 'j _ t', a: 'e', zh: '噴射機'}, {w: 'pet', b: 'p _ t', a: 'e', zh: '寵物'}, {w: 'wet', b: 'w _ t', a: 'e', zh: '濕的'},
+            {w: 'wig', b: 'w _ g', a: 'i', zh: '假髮'}, {w: 'big', b: 'b _ g', a: 'i', zh: '大的'}, {w: 'pig', b: 'p _ g', a: 'i', zh: '豬'}, {w: 'pin', b: 'p _ n', a: 'i', zh: '大頭針'}, {w: 'bin', b: 'b _ n', a: 'i', zh: '垃圾桶'}, {w: 'fin', b: 'f _ n', a: 'i', zh: '魚鰭'}, {w: 'rip', b: 'r _ p', a: 'i', zh: '撕裂'}, {w: 'dip', b: 'd _ p', a: 'i', zh: '沾'}, {w: 'hip', b: 'h _ p', a: 'i', zh: '臀部'},
+            {w: 'top', b: 't _ p', a: 'o', zh: '頂部'}, {w: 'cop', b: 'c _ p', a: 'o', zh: '警察'}, {w: 'mop', b: 'm _ p', a: 'o', zh: '拖把'}, {w: 'dot', b: 'd _ t', a: 'o', zh: '點'}, {w: 'hot', b: 'h _ t', a: 'o', zh: '熱的'}, {w: 'pot', b: 'p _ t', a: 'o', zh: '鍋子'}, {w: 'box', b: 'b _ x', a: 'o', zh: '箱子'}, {w: 'fox', b: 'f _ x', a: 'o', zh: '狐狸'}, {w: 'pox', b: 'p _ x', a: 'o', zh: '痘'},
+            {w: 'rub', b: 'r _ b', a: 'u', zh: '摩擦'}, {w: 'cub', b: 'c _ b', a: 'u', zh: '幼獸'}, {w: 'tub', b: 't _ b', a: 'u', zh: '浴缸'}, {w: 'hug', b: 'h _ g', a: 'u', zh: '擁抱'}, {w: 'bug', b: 'b _ g', a: 'u', zh: '蟲'}, {w: 'mug', b: 'm _ g', a: 'u', zh: '馬克杯'}, {w: 'run', b: 'r _ n', a: 'u', zh: '跑'}, {w: 'bun', b: 'b _ n', a: 'u', zh: '小圓麵包'}, {w: 'sun', b: 's _ n', a: 'u', zh: '太陽'}
+        ];
+        const shortGameAnswers = ['a', 'e', 'i', 'o', 'u'];
+        
+        const mixedGameWords = [...longGameWords, ...shortGameWords];
+        const mixedGameAnswers = [...new Set([...longGameAnswers, ...shortGameAnswers])];
+
+        // --- 全域變數 ---
+        let currentMode = 'long'; 
+        let mainIndex = { 'long': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'short': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'mixed': { A: 0, E: 0, I: 0, O: 0, U: 0 } };
+        let drillIndex = { 'long': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'short': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'mixed': { A: 0, E: 0, I: 0, O: 0, U: 0 } };
+        let currentDrillVowel = 'A'; 
+        let isCooldown = false; 
+        
+        // 計時遊戲變數
+        let gameScore = 0;
+        let gameTimeLeft = 300; // 5 分鐘
+        let gameTimerInterval = null;
+        let isGameActive = false;
+        let currentGameObj = null; 
+
+        const synth = window.speechSynthesis;
+        function getFemaleUSVoice() {
+            const voices = synth.getVoices();
+            return voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Zira')) || voices.find(v => v.lang.startsWith('en'));
+        }
+        function getActiveExamples() { 
+            if(currentMode === 'long') return longExamples;
+            if(currentMode === 'short') return shortExamples;
+            return mixedExamples;
+        }
+        function speak(text, lang, customRate = 0.8) {
+            if (synth.speaking) synth.cancel(); 
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang; utterance.rate = customRate; 
+            if (lang === 'en-US') { const voice = getFemaleUSVoice(); if (voice) utterance.voice = voice; }
+            synth.speak(utterance);
+        }
+
+        // 切換模式 (切換時強制結束目前的遊戲，避免錯亂)
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + mode).classList.add('active');
+
+            const modeTexts = { 'long': '長母音', 'short': '短母音', 'mixed': '綜合挑戰' };
+            const mText = modeTexts[mode];
+            
+            document.getElementById('title-main').innerText = `🎲 區塊 1: 發音學習 (${mText})`;
+            document.getElementById('title-drill').innerText = `🎯 區塊 2: 單一字母特訓 (${mText})`;
+            document.getElementById('title-game').innerText = `🎮 區塊 3: 限時挑戰 (${mText})`;
+
+            document.getElementById('example-display').innerText = '請點擊上方字母！';
+            document.getElementById('drill-display').innerText = `準備練習 ${currentDrillVowel}！`;
+
+            forceEndGame(); // 重置遊戲狀態
+        }
+
+        // --- 綜合練習邏輯 (視覺拆解 + 慢速 0.4) ---
+        function playVowel(vowel, btnElement) {
+            if (isCooldown) return; 
+            isCooldown = true; btnElement.classList.add('cooldown');
+            const display = document.getElementById('example-display');
+            const words = getActiveExamples()[vowel];
+            const currentWord = words[mainIndex[currentMode][vowel]];
+
+            const chunkVisual = currentWord.c.join(' - ');
+            display.innerHTML = `<span class="spell-text">${chunkVisual}</span> <br> ➔ ${currentWord.en} (${currentWord.zh})`;
+            speak(currentWord.en, 'en-US', 0.4); 
+
+            mainIndex[currentMode][vowel] = (mainIndex[currentMode][vowel] + 1) % words.length;
+            setTimeout(() => { isCooldown = false; btnElement.classList.remove('cooldown'); }, 1500);
+        }
+
+        // --- 獨立特訓區邏輯 (純單字 + 正常速 0.8) ---
+        function setDrillVowel(vowel) {
+            currentDrillVowel = vowel;
+            document.querySelectorAll('.drill-vowel-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('drill-' + vowel.toLowerCase()).classList.add('active');
+            document.getElementById('drill-display').innerText = `準備練習 ${vowel}！`;
+        }
+        function playDrillWord(btnElement) {
+            if (isCooldown) return; 
+            isCooldown = true; btnElement.classList.add('cooldown');
+            const display = document.getElementById('drill-display');
+            const words = getActiveExamples()[currentDrillVowel];
+            const currentWord = words[drillIndex[currentMode][currentDrillVowel]];
+
+            display.innerHTML = `${currentWord.en} (${currentWord.zh})`;
+            speak(currentWord.en, 'en-US', 0.8);
+
+            drillIndex[currentMode][currentDrillVowel] = (drillIndex[currentMode][currentDrillVowel] + 1) % words.length;
+            setTimeout(() => { isCooldown = false; btnElement.classList.remove('cooldown'); }, 1200);
+        }
+
+        // --- 填空遊戲邏輯 ---
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function forceEndGame() {
+            isGameActive = false;
+            clearInterval(gameTimerInterval);
+            gameTimeLeft = 300;
+            document.getElementById('game-timer').innerText = `⏳ 05:00`;
+            document.getElementById('game-score').innerText = `🏆 答對: 0`;
+            document.getElementById('game-board').style.display = 'none';
+            document.getElementById('game-start-screen').style.display = 'block';
+            document.getElementById('game-end-msg').style.display = 'none';
+            document.getElementById('start-btn-text').innerText = '▶️ 開始 5 分鐘測驗';
+        }
+
+        function startGame() {
+            gameScore = 0;
+            gameTimeLeft = 300;
+            isGameActive = true;
+            
+            document.getElementById('game-score').innerText = `🏆 答對: 0`;
+            document.getElementById('game-timer').innerText = `⏳ 05:00`;
+            
+            document.getElementById('game-start-screen').style.display = 'none';
+            document.getElementById('game-board').style.display = 'block';
+            
+            nextGameQuestion();
+            
+            if(gameTimerInterval) clearInterval(gameTimerInterval);
+            gameTimerInterval = setInterval(() => {
+                gameTimeLeft--;
+                document.getElementById('game-timer').innerText = `⏳ ${formatTime(gameTimeLeft)}`;
+                if (gameTimeLeft <= 0) { endGame(); }
+            }, 1000);
+        }
+
+        function endGame() {
+            isGameActive = false;
+            clearInterval(gameTimerInterval);
+            document.getElementById('game-board').style.display = 'none';
+            document.getElementById('game-start-screen').style.display = 'block';
+            document.getElementById('game-end-msg').innerText = `⏰ 時間到！\n恭喜你總共答對了 ${gameScore} 題！`;
+            document.getElementById('game-end-msg').style.display = 'block';
+            document.getElementById('start-btn-text').innerText = '🔄 再挑戰一次';
+        }
+
+        function nextGameQuestion() {
+            if(!isGameActive) return;
+
+            let gWords = longGameWords;
+            let gAnswers = longGameAnswers;
+            if (currentMode === 'short') { gWords = shortGameWords; gAnswers = shortGameAnswers; }
+            if (currentMode === 'mixed') { gWords = mixedGameWords; gAnswers = mixedGameAnswers; }
+
+            const randomIdx = Math.floor(Math.random() * gWords.length);
+            currentGameObj = gWords[randomIdx];
+
+            let wrongAnswers = gAnswers.filter(v => v !== currentGameObj.a);
+            wrongAnswers.sort(() => 0.5 - Math.random());
+            let options = [currentGameObj.a, wrongAnswers[0], wrongAnswers[1]];
+            options.sort(() => 0.5 - Math.random()); 
+
+            document.getElementById('game-word').innerText = currentGameObj.b;
+            document.getElementById('game-zh').innerText = `(${currentGameObj.zh})`;
+            document.getElementById('game-feedback').innerText = '請選擇缺少的母音：';
+            document.getElementById('game-feedback').style.color = '#7f8c8d';
+            
+            const optsDiv = document.getElementById('game-options');
+            optsDiv.innerHTML = ''; 
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'game-opt-btn'; btn.innerText = opt;
+                btn.onclick = function() { checkGameAnswer(opt, this); };
+                optsDiv.appendChild(btn);
+            });
+            
+            setTimeout(() => { if(isGameActive) speak(currentGameObj.w, 'en-US', 0.8); }, 500);
+        }
+
+        function checkGameAnswer(ans, btn) {
+            if(!isGameActive) return;
+            const feedbackText = document.getElementById('game-feedback');
+            
+            if (ans === currentGameObj.a) {
+                // 答對了
+                btn.style.backgroundColor = '#2ecc71'; btn.style.color = 'white'; btn.style.borderColor = '#2ecc71';
+                feedbackText.innerText = '🎉 答對了！'; feedbackText.style.color = '#27ae60';
+                
+                gameScore++;
+                document.getElementById('game-score').innerText = `🏆 答對: ${gameScore}`;
+                document.getElementById('game-word').innerText = currentGameObj.w;
+                
+                speak(currentGameObj.w, 'en-US', 0.8); 
+                
+                // 鎖定所有選項
+                document.querySelectorAll('.game-opt-btn').forEach(b => b.disabled = true);
+                
+                // 【重點更新】停頓 1.5 秒後自動進入下一題！
+                setTimeout(() => { if(isGameActive) nextGameQuestion(); }, 1500);
+            } else {
+                // 答錯了
+                btn.style.backgroundColor = '#e74c3c'; btn.style.color = 'white'; btn.style.borderColor = '#e74c3c';
+                btn.disabled = true; 
+                feedbackText.innerText = '❌ 答錯囉，再試一次！'; feedbackText.style.color = '#e74c3c';
+                speak(currentGameObj.w, 'en-US', 0.8); 
+            }
+        }
+        
+        function playGameHint() { if(currentGameObj && isGameActive) speak(currentGameObj.w, 'en-US', 0.8); }
+
+        // --- 自訂單字邏輯 ---
+        async function speakCustomWord() {
+            const inputEl = document.getElementById('custom-word');
+            const transDisplay = document.getElementById('translation-display');
+            const word = inputEl.value.trim();
+            if (!word) { alert("請先輸入英文單字！"); return; }
+            transDisplay.innerText = "正在翻譯中...";
+            try {
+                const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|zh-TW`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                transDisplay.innerText = `中文: ${data.responseData.translatedText}`;
+                speak(word, 'en-US');
+            } catch (error) {
+                transDisplay.innerText = "翻譯失敗，請檢查網路。";
+                speak(word, 'en-US');
+            }
+        }
+    </script>
+</body>
+</html>
