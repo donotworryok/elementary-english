@@ -471,27 +471,43 @@
             document.getElementById('start-btn-text').innerText = '🔄 再挑戰一次';
         }
         function nextGameQuestion() {
-            if(!isGameActive) return;
-            let gWords = longGameWords; let gAnswers = longGameAnswers;
-            if (currentMode === 'short') { gWords = shortGameWords; gAnswers = shortGameAnswers; }
-            if (currentMode === 'mixed') { gWords = mixedGameWords; gAnswers = mixedGameAnswers; }
+    if (!isGameActive) return;
+    let gWords = longGameWords; 
+    let gAnswers = longGameAnswers;
+    if (currentMode === 'short') { gWords = shortGameWords; gAnswers = shortGameAnswers; }
+    if (currentMode === 'mixed') { gWords = mixedGameWords; gAnswers = mixedGameAnswers; }
 
-            currentGameObj = gWords[Math.floor(Math.random() * gWords.length)];
-            let wrongAnswers = gAnswers.filter(v => v !== currentGameObj.a).sort(() => 0.5 - Math.random());
-            let options = [currentGameObj.a, wrongAnswers[0], wrongAnswers[1]].sort(() => 0.5 - Math.random()); 
+    currentGameObj = gWords[Math.floor(Math.random() * gWords.length)];
 
-            document.getElementById('game-word').innerText = currentGameObj.b;
-            document.getElementById('game-zh').innerText = `(${currentGameObj.zh})`;
-            document.getElementById('game-feedback').innerText = '請選擇缺少的母音：';
-            document.getElementById('game-feedback').style.color = '#7f8c8d';
-            
-            const optsDiv = document.getElementById('game-options'); optsDiv.innerHTML = ''; 
-            options.forEach(opt => {
-                const btn = document.createElement('button'); btn.className = 'game-opt-btn'; btn.innerText = opt;
-                btn.onclick = function() { checkGameAnswer(opt, this); }; optsDiv.appendChild(btn);
-            });
-            setTimeout(() => { if(isGameActive) speak(currentGameObj.w, 'en-US', 0.8); }, 500);
-        }
+    // 【關鍵修復】：過濾出與正確答案「相同字母長度」的干擾選項
+    const targetLength = currentGameObj.a.length;
+    let validPool = gAnswers.filter(v => v.length === targetLength && v !== currentGameObj.a);
+    
+    // 若同長度候選不足時的後備清單
+    if (validPool.length < 2) {
+        validPool = gAnswers.filter(v => v !== currentGameObj.a);
+    }
+
+    validPool.sort(() => 0.5 - Math.random());
+    let options = [currentGameObj.a, validPool[0], validPool[1]].sort(() => 0.5 - Math.random()); 
+
+    // 將題目底線統一顯示，避免洩題
+    document.getElementById('game-word').innerText = currentGameObj.b;
+    document.getElementById('game-zh').innerText = `(${currentGameObj.zh})`;
+    document.getElementById('game-feedback').innerText = '請選擇缺少的母音：';
+    document.getElementById('game-feedback').style.color = '#7f8c8d';
+    
+    const optsDiv = document.getElementById('game-options'); 
+    optsDiv.innerHTML = ''; 
+    options.forEach(opt => {
+        const btn = document.createElement('button'); 
+        btn.className = 'game-opt-btn'; 
+        btn.innerText = opt;
+        btn.onclick = function() { checkGameAnswer(opt, this); }; 
+        optsDiv.appendChild(btn);
+    });
+    setTimeout(() => { if (isGameActive) speak(currentGameObj.w, 'en-US', 0.8); }, 500);
+}
         function checkGameAnswer(ans, btn) {
             if(!isGameActive) return;
             const feedbackText = document.getElementById('game-feedback');
