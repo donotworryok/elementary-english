@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+html_content = """<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -128,16 +128,27 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* --- 拼字遊戲專屬樣式 --- */
+        /* --- 拼字遊戲專屬樣式 (A-Z鍵盤) --- */
         .spell-game-section { background-color: #fff3e0; border: 3px solid #e67e22; }
         .spell-slot-container {
             display: flex; justify-content: center; gap: 10px; margin: 25px 0 15px 0; min-height: 50px;
         }
         .spell-slot {
             font-size: 2.5rem; font-weight: bold; color: #2c3e50;
-            border-bottom: 4px solid #34495e; min-width: 40px; text-align: center; padding-bottom: 5px;
+            border-bottom: 4px solid #34495e; min-width: 35px; text-align: center; padding-bottom: 5px;
             font-family: monospace; transition: all 0.3s ease;
         }
+        .keyboard-container {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 20px 0; max-width: 100%;
+        }
+        .key-btn {
+            font-size: 1.4rem; padding: 10px 12px; min-width: 42px;
+            background-color: #fff; border: 2px solid #bdc3c7; border-radius: 8px;
+            cursor: pointer; font-weight: bold; color: #34495e; transition: all 0.15s;
+            text-transform: lowercase; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .key-btn:active { transform: scale(0.9); }
+        .key-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         /* --- 動詞區塊樣式 --- */
         .verb-section { background-color: #fce4ec; border: 3px solid #f06292; }
@@ -164,7 +175,7 @@
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('tab-phonics', this)">📖 1. 發音填空</button>
         <button class="tab-btn" onclick="switchTab('tab-verbs', this)">🏃 2. 動詞測驗</button>
-        <button class="tab-btn" onclick="switchTab('tab-spelling', this)">🧩 3. 拼字挑戰</button>
+        <button class="tab-btn" onclick="switchTab('tab-spelling', this)">🧩 3. 進階拼字</button>
         <button class="tab-btn" onclick="switchTab('tab-custom', this)">🔍 4. 字典</button>
     </div>
 
@@ -226,7 +237,7 @@
     </div>
 
     <!-- =========================
-         第二章：動詞練習與 9 題測驗區塊 
+         第二章：動詞練習與測驗區塊 
          ========================= -->
     <div id="tab-verbs" class="tab-content">
         <button class="reset-btn" onclick="resetCurrentTab('verbs')">🔄 Reset 本頁</button>
@@ -270,7 +281,7 @@
     </div>
 
     <!-- =========================
-         第三章：拼字遊戲區塊 (NEW)
+         第三章：進階拼字遊戲區塊 (A-Z鍵盤)
          ========================= -->
     <div id="tab-spelling" class="tab-content">
         <button class="reset-btn" onclick="resetCurrentTab('spelling')">🔄 Reset 本頁</button>
@@ -282,8 +293,8 @@
         </div>
 
         <div class="section-container spell-game-section">
-            <h2 style="font-size: 1.2rem;">🧩 單字拼拼樂 (發音拆解)</h2>
-            <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">聽發音，把打亂的發音組合按順序拼出來！</p>
+            <h2 style="font-size: 1.2rem;">🧩 進階拼字挑戰 (A-Z鍵盤)</h2>
+            <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">聽發音，使用下方字母鍵盤拼出完整的單字！</p>
             
             <div class="game-stats">
                 <span id="spell-timer" style="color: #d35400;">⏳ 05:00</span>
@@ -299,8 +310,10 @@
                 <button class="game-hint-btn" style="background-color: #e67e22;" onclick="playSpellHint()">🔊 再聽一次發音</button>
                 <div id="spell-slots" class="spell-slot-container"></div>
                 <div class="game-zh-display" id="spell-zh"></div>
-                <div id="spell-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 10px;">請依序點擊拼出單字：</div>
-                <div class="game-options-container" id="spell-options"></div>
+                <div id="spell-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 5px;">請依序點擊鍵盤拼出單字：</div>
+                
+                <!-- A-Z 鍵盤容器 -->
+                <div class="keyboard-container" id="spell-keyboard"></div>
             </div>
         </div>
     </div>
@@ -385,7 +398,6 @@
         const mixedExamples = { 'A':[], 'E':[], 'I':[], 'O':[], 'U':[] };
         ['A','E','I','O','U'].forEach(v => { mixedExamples[v] = [...longExamples[v], ...shortExamples[v]]; });
 
-        // --- 挖空題目全面統一為 5 個問號 ????? ---
         const longGameWords = [
             {w: 'maid', b: 'm ????? d', a: 'ai', zh: '女僕'}, {w: 'paint', b: 'p ????? n t', a: 'ai', zh: '畫畫'}, {w: 'rain', b: 'r ????? n', a: 'ai', zh: '雨'}, {w: 'bay', b: 'b ?????', a: 'ay', zh: '海灣'}, {w: 'hay', b: 'h ?????', a: 'ay', zh: '乾草'}, {w: 'pay', b: 'p ?????', a: 'ay', zh: '支付'}, {w: 'cake', b: 'c ????? k e', a: 'a', zh: '蛋糕'}, {w: 'gate', b: 'g ????? t e', a: 'a', zh: '大門'}, {w: 'tape', b: 't ????? p e', a: 'a', zh: '膠帶'},
             {w: 'bean', b: 'b ????? n', a: 'ea', zh: '豆子'}, {w: 'leaf', b: 'l ????? f', a: 'ea', zh: '葉子'}, {w: 'seat', b: 's ????? t', a: 'ea', zh: '座位'}, {w: 'jeep', b: 'j ????? p', a: 'ee', zh: '吉普車'}, {w: 'bee', b: 'b ?????', a: 'ee', zh: '蜜蜂'}, {w: 'weed', b: 'w ????? d', a: 'ee', zh: '雜草'}, {w: 'alley', b: 'a l l ?????', a: 'ey', zh: '小巷'}, {w: 'hockey', b: 'h o c k ?????', a: 'ey', zh: '曲棍球'}, {w: 'key', b: 'k ?????', a: 'ey', zh: '鑰匙'},
@@ -430,11 +442,11 @@
         let verbScoreCount = 0;
         let currentVerbObj = null;
 
-        // 拼字遊戲變數
+        // 拼字遊戲變數 (改版)
         let spellMode = 'long';
         let spellScore = 0; let spellTimeLeft = 300; let spellTimerInterval = null;
         let isSpellActive = false; let currentSpellObj = null;
-        let spellCorrectChunks = []; let spellCurrentIndex = 0; let spellPool = [];
+        let spellCorrectLetters = []; let spellCurrentIndex = 0; let spellPool = [];
 
         function getActiveExamples() { 
             if(currentMode === 'long') return longExamples;
@@ -658,7 +670,7 @@
             }
         }
 
-        // --- 第三章：拼字遊戲邏輯 (NEW) ---
+        // --- 第三章：進階拼字遊戲邏輯 (改為 A-Z鍵盤) ---
         function setSpellMode(mode) {
             spellMode = mode;
             document.querySelectorAll('#tab-spelling .mode-btn').forEach(btn => btn.classList.remove('active'));
@@ -696,6 +708,9 @@
             document.getElementById('spell-start-screen').style.display = 'none';
             document.getElementById('spell-board').style.display = 'block';
             
+            // 初始化鍵盤
+            initSpellKeyboard();
+            
             nextSpellQuestion();
             
             if (spellTimerInterval) clearInterval(spellTimerInterval);
@@ -714,6 +729,20 @@
             document.querySelector('#tab-spelling .game-start-btn').innerText = '🔄 再挑戰一次';
         }
 
+        // 建立 A-Z 鍵盤
+        function initSpellKeyboard() {
+            const kbContainer = document.getElementById('spell-keyboard');
+            kbContainer.innerHTML = '';
+            const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+            alphabet.forEach(letter => {
+                const btn = document.createElement('button');
+                btn.className = 'key-btn';
+                btn.innerText = letter;
+                btn.onclick = function() { checkSpellLetter(letter, this); };
+                kbContainer.appendChild(btn);
+            });
+        }
+
         function nextSpellQuestion() {
             if (!isSpellActive) return;
             if (spellPool.length === 0) {
@@ -721,22 +750,15 @@
             }
             
             currentSpellObj = spellPool.pop();
-            spellCorrectChunks = [...currentSpellObj.c];
+            // 將單字拆解成單一字母陣列
+            spellCorrectLetters = currentSpellObj.en.split('');
             spellCurrentIndex = 0;
 
             document.getElementById('spell-zh').innerText = `(${currentSpellObj.zh})`;
             renderSpellSlots();
 
-            let scrambled = [...spellCorrectChunks].sort(() => 0.5 - Math.random());
-            const optsDiv = document.getElementById('spell-options');
-            optsDiv.innerHTML = '';
-            scrambled.forEach((chunk) => {
-                const btn = document.createElement('button');
-                btn.className = 'game-opt-btn';
-                btn.innerText = chunk;
-                btn.onclick = function() { checkSpellChunk(chunk, this); };
-                optsDiv.appendChild(btn);
-            });
+            // 確保鍵盤可點擊
+            document.querySelectorAll('.key-btn').forEach(b => b.disabled = false);
 
             setTimeout(() => { if(isSpellActive) speak(currentSpellObj.en, 'en-US', 0.8); }, 500);
         }
@@ -744,11 +766,11 @@
         function renderSpellSlots() {
             const slotsDiv = document.getElementById('spell-slots');
             slotsDiv.innerHTML = '';
-            spellCorrectChunks.forEach((chunk, index) => {
+            spellCorrectLetters.forEach((letter, index) => {
                 const span = document.createElement('span');
                 span.className = 'spell-slot';
                 if (index < spellCurrentIndex) {
-                    span.innerText = spellCorrectChunks[index];
+                    span.innerText = spellCorrectLetters[index];
                     span.style.borderBottomColor = '#27ae60'; // 填對變綠色底線
                 } else {
                     span.innerText = ''; // 還沒填入保持空白
@@ -757,34 +779,47 @@
             });
         }
 
-        function checkSpellChunk(chunk, btn) {
+        function checkSpellLetter(letter, btn) {
             if (!isSpellActive) return;
             const feedbackText = document.getElementById('spell-feedback');
+            const correctLetter = spellCorrectLetters[spellCurrentIndex].toLowerCase();
 
-            if (chunk === spellCorrectChunks[spellCurrentIndex]) {
-                btn.style.visibility = 'hidden'; 
+            // 如果遇到大寫字母(如 Ted)，自動轉換為小寫比對
+            if (letter.toLowerCase() === correctLetter) {
+                // 答對了
+                const originalBg = btn.style.backgroundColor;
+                btn.style.backgroundColor = '#2ecc71'; btn.style.color = 'white'; btn.style.borderColor = '#2ecc71';
+                setTimeout(() => {
+                    // 恢復按鈕原本樣式 (因為鍵盤按鈕要重複使用)
+                    btn.style.backgroundColor = ''; btn.style.color = ''; btn.style.borderColor = '';
+                }, 200);
+
                 spellCurrentIndex++;
                 renderSpellSlots();
                 
-                if (spellCurrentIndex === spellCorrectChunks.length) {
+                if (spellCurrentIndex === spellCorrectLetters.length) {
                     feedbackText.innerText = '🎉 拼對了！';
                     feedbackText.style.color = '#27ae60';
                     spellScore++;
                     document.getElementById('spell-score').innerText = `🏆 拼對: ${spellScore}`;
                     speak(currentSpellObj.en, 'en-US', 0.8);
                     
+                    // 暫時鎖定鍵盤
+                    document.querySelectorAll('.key-btn').forEach(b => b.disabled = true);
+                    
                     setTimeout(() => { 
                         if(isSpellActive) {
-                            feedbackText.innerText = '請依序點擊拼出單字：';
+                            feedbackText.innerText = '請依序點擊鍵盤拼出單字：';
                             feedbackText.style.color = '#7f8c8d';
                             nextSpellQuestion(); 
                         }
                     }, 1500);
                 }
             } else {
+                // 答錯了
                 btn.style.backgroundColor = '#e74c3c'; btn.style.color = 'white'; btn.style.borderColor = '#e74c3c';
                 setTimeout(() => {
-                    btn.style.backgroundColor = '#fff'; btn.style.color = '#34495e'; btn.style.borderColor = '#bdc3c7';
+                    btn.style.backgroundColor = ''; btn.style.color = ''; btn.style.borderColor = '';
                 }, 400);
                 speak(currentSpellObj.en, 'en-US', 0.8);
             }
@@ -807,4 +842,6 @@
         }
     </script>
 </body>
-</html>
+</html>"""
+with open('/mnt/data/english_game_az_keyboard.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
