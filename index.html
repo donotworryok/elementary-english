@@ -193,14 +193,13 @@
             <button id="btn-mixed" class="mode-btn" onclick="setMode('mixed')">🔥 綜合挑戰</button>
         </div>
 
-        <!-- 隱藏綜合順序區塊開關 -->
         <div style="margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;">
             <input type="checkbox" id="hide-main-toggle" style="width: 20px; height: 20px; cursor: pointer;" onchange="toggleMainSequence()">
             <label for="hide-main-toggle" style="font-weight: bold; color: #7f8c8d; font-size: 1.1rem; cursor: pointer;">隱藏「綜合順序 (AEIOU)」區塊</label>
         </div>
 
         <div class="section-container" id="main-sequence-section">
-            <h2 id="title-main" style="font-size: 1.2rem;">🎲 綜合順序 (視覺拆解+慢速)</h2>
+            <h2 id="title-main" style="font-size: 1.2rem;">🎲 綜合順序 (長母音)</h2>
             <div class="vowel-container">
                 <button class="vowel-btn bg-a" onclick="playVowel('A', this)">A</button>
                 <button class="vowel-btn bg-e" onclick="playVowel('E', this)">E</button>
@@ -212,7 +211,7 @@
         </div>
 
         <div class="section-container drill-section">
-            <h2 id="title-drill" style="font-size: 1.2rem;">🎯 單一字母特訓 (純單字)</h2>
+            <h2 id="title-drill" style="font-size: 1.2rem;">🎯 單一字母特訓 (長母音)</h2>
             <div class="vowel-container" style="gap: 8px;">
                 <button id="drill-a" class="drill-vowel-btn bg-a active" onclick="setDrillVowel('A')">A</button>
                 <button id="drill-e" class="drill-vowel-btn bg-e" onclick="setDrillVowel('E')">E</button>
@@ -225,14 +224,14 @@
         </div>
 
         <div class="section-container game-section">
-            <h2 id="title-game" style="font-size: 1.2rem;">🎮 限時挑戰 (發音填空)</h2>
+            <h2 id="title-game" style="font-size: 1.2rem;">🎮 長母音 (不限時 45 題)</h2>
             <div class="game-stats">
-                <span id="game-timer" style="color: #e67e22;">⏳ 05:00</span>
-                <span id="game-score" style="color: #27ae60;">🏆 答對: 0</span>
+                <span id="game-timer" style="color: #e67e22;">⏳ 00:00</span>
+                <span id="game-score" style="color: #27ae60;">🏆 答對: 0 / 45</span>
             </div>
             <div id="game-start-screen">
                 <p id="game-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
-                <button class="game-start-btn" onclick="startGame()" id="start-btn-text">▶️ 開始 5 分鐘測驗</button>
+                <button class="game-start-btn" onclick="startGame()" id="start-btn-text">▶️ 開始 45 題挑戰</button>
             </div>
             <div id="game-board" style="display: none;">
                 <button class="game-hint-btn" onclick="playGameHint()">🔊 再聽一次發音</button>
@@ -306,17 +305,17 @@
         </div>
 
         <div class="section-container spell-game-section">
-            <h2 style="font-size: 1.2rem;">🧩 單字拼拼樂 (發音拆解)</h2>
+            <h2 id="title-spell" style="font-size: 1.2rem;">🧩 單字拼拼樂 (長母音 - 不限時 45 題)</h2>
             <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">聽發音，把打亂的發音組合按順序拼出來！</p>
             
             <div class="game-stats">
-                <span id="spell-timer" style="color: #d35400;">⏳ 05:00</span>
-                <span id="spell-score" style="color: #27ae60;">🏆 拼對: 0</span>
+                <span id="spell-timer" style="color: #d35400;">⏳ 00:00</span>
+                <span id="spell-score" style="color: #27ae60;">🏆 拼對: 0 / 45</span>
             </div>
             
             <div id="spell-start-screen">
                 <p id="spell-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
-                <button class="game-start-btn" style="background-color: #e67e22; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);" onclick="startSpellGame()">▶️ 開始 5 分鐘挑戰</button>
+                <button class="game-start-btn" style="background-color: #e67e22; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);" id="spell-start-btn-text" onclick="startSpellGame()">▶️ 開始 45 題挑戰</button>
             </div>
             
             <div id="spell-board" style="display: none;">
@@ -374,8 +373,6 @@
                 document.getElementById('example-display').innerText = '請點擊上方字母！';
                 document.getElementById('drill-display').innerText = '準備練習 A！';
                 setMode('long');
-                
-                // 重置隱藏開關
                 document.getElementById('hide-main-toggle').checked = false;
                 toggleMainSequence();
             } else if (tabName === 'verbs') {
@@ -462,20 +459,23 @@
         let currentDrillVowel = 'A'; 
         let isCooldown = false; 
         
-        let gameScore = 0; let gameTimeLeft = 300; let gameTimerInterval = null;
+        let gameScore = 0; let gameTimerInterval = null;
         let isGameActive = false; let currentGameObj = null; 
         let gameWordsPool = [];
+        let gameElapsed = 0;
+        let gameTotalQuestions = 45; // 記錄當前模式的總題數
 
         let verbListShuffled = [];
         let verbCurrentIdx = 0;
         let verbScoreCount = 0;
         let currentVerbObj = null;
 
-        // 拼字遊戲變數
         let spellMode = 'long';
-        let spellScore = 0; let spellTimeLeft = 300; let spellTimerInterval = null;
+        let spellScore = 0; let spellTimerInterval = null;
         let isSpellActive = false; let currentSpellObj = null;
         let spellCorrectChunks = []; let spellCurrentIndex = 0; let spellPool = [];
+        let spellElapsed = 0;
+        let spellTotalQuestions = 45; // 記錄當前模式的總題數
 
         function getActiveExamples() { 
             if(currentMode === 'long') return longExamples;
@@ -488,11 +488,15 @@
             currentMode = mode;
             document.querySelectorAll('#tab-phonics .mode-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + mode).classList.add('active');
+            
             const modeTexts = { 'long': '長母音', 'short': '短母音', 'mixed': '綜合挑戰' };
             const mText = modeTexts[mode];
             document.getElementById('title-main').innerText = `🎲 綜合順序 (${mText})`;
             document.getElementById('title-drill').innerText = `🎯 單一字母特訓 (${mText})`;
-            document.getElementById('title-game').innerText = `🎮 限時挑戰 (${mText})`;
+            
+            gameTotalQuestions = (mode === 'mixed') ? 90 : 45;
+            document.getElementById('title-game').innerText = `🎮 ${mText} (不限時 ${gameTotalQuestions} 題)`;
+
             document.getElementById('example-display').innerText = '請點擊上方字母！';
             document.getElementById('drill-display').innerText = `準備練習 ${currentDrillVowel}！`;
             forceEndGame(); 
@@ -527,23 +531,28 @@
             setTimeout(() => { isCooldown = false; btnElement.classList.remove('cooldown'); }, 1200);
         }
 
-        function formatTime(seconds) { return `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`; }
+        function formatTime(seconds) { 
+            return `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`; 
+        }
         
         // --- 字母拼讀填空遊戲 ---
         function forceEndGame() {
-            isGameActive = false; clearInterval(gameTimerInterval); gameTimeLeft = 300;
-            document.getElementById('game-timer').innerText = `⏳ 05:00`;
-            document.getElementById('game-score').innerText = `🏆 答對: 0`;
+            isGameActive = false; clearInterval(gameTimerInterval);
+            
             document.getElementById('game-board').style.display = 'none';
             document.getElementById('game-start-screen').style.display = 'block';
             document.getElementById('game-end-msg').style.display = 'none';
-            document.getElementById('start-btn-text').innerText = '▶️ 開始 5 分鐘測驗';
+            
+            gameTotalQuestions = currentMode === 'mixed' ? 90 : 45;
+            document.getElementById('game-timer').innerText = `⏳ 00:00`;
+            document.getElementById('game-score').innerText = `🏆 答對: 0 / ${gameTotalQuestions}`;
+            document.getElementById('start-btn-text').innerText = `▶️ 開始 ${gameTotalQuestions} 題挑戰`;
         }
 
         function startGame() {
-            gameScore = 0; gameTimeLeft = 300; isGameActive = true;
-            document.getElementById('game-score').innerText = `🏆 答對: 0`;
-            document.getElementById('game-timer').innerText = `⏳ 05:00`;
+            gameScore = 0; isGameActive = true;
+            gameTotalQuestions = currentMode === 'mixed' ? 90 : 45;
+            document.getElementById('game-score').innerText = `🏆 答對: 0 / ${gameTotalQuestions}`;
             document.getElementById('game-start-screen').style.display = 'none';
             document.getElementById('game-board').style.display = 'block';
 
@@ -552,19 +561,31 @@
             else { gameWordsPool = [...longGameWords]; }
             gameWordsPool.sort(() => 0.5 - Math.random());
 
-            nextGameQuestion();
             if(gameTimerInterval) clearInterval(gameTimerInterval);
+            
+            gameElapsed = 0;
+            document.getElementById('game-timer').innerText = `⏳ 00:00`;
             gameTimerInterval = setInterval(() => {
-                gameTimeLeft--; document.getElementById('game-timer').innerText = `⏳ ${formatTime(gameTimeLeft)}`;
-                if (gameTimeLeft <= 0) { endGame(); }
+                gameElapsed++; 
+                document.getElementById('game-timer').innerText = `⏳ ${formatTime(gameElapsed)}`;
             }, 1000);
+
+            nextGameQuestion();
         }
 
-        function endGame() {
+        function endGame(isCompleted = false) {
             isGameActive = false; clearInterval(gameTimerInterval);
             document.getElementById('game-board').style.display = 'none';
             document.getElementById('game-start-screen').style.display = 'block';
-            document.getElementById('game-end-msg').innerText = `⏰ 時間到！\n恭喜你總共答對了 ${gameScore} 題！`;
+            
+            if (isCompleted) {
+                const finalTime = formatTime(gameElapsed);
+                const mText = currentMode === 'mixed' ? '綜合' : (currentMode === 'long' ? '長母音' : '短母音');
+                document.getElementById('game-end-msg').innerText = `🎉 太棒了！\n你完成了 ${gameTotalQuestions} 題${mText}挑戰！\n總花費時間：${finalTime}`;
+            } else {
+                document.getElementById('game-end-msg').innerText = `停止測驗！\n總共答對了 ${gameScore} 題！`;
+            }
+            
             document.getElementById('game-end-msg').style.display = 'block';
             document.getElementById('start-btn-text').innerText = '🔄 再挑戰一次';
         }
@@ -573,10 +594,8 @@
             if(!isGameActive) return;
 
             if (gameWordsPool.length === 0) {
-                if (currentMode === 'short') { gameWordsPool = [...shortGameWords]; }
-                else if (currentMode === 'mixed') { gameWordsPool = [...mixedGameWords]; }
-                else { gameWordsPool = [...longGameWords]; }
-                gameWordsPool.sort(() => 0.5 - Math.random());
+                endGame(true);
+                return;
             }
 
             currentGameObj = gameWordsPool.pop(); 
@@ -607,7 +626,10 @@
             if (ans === currentGameObj.a) {
                 btn.style.backgroundColor = '#2ecc71'; btn.style.color = 'white'; btn.style.borderColor = '#2ecc71';
                 feedbackText.innerText = '🎉 答對了！'; feedbackText.style.color = '#27ae60';
-                gameScore++; document.getElementById('game-score').innerText = `🏆 答對: ${gameScore}`;
+                
+                gameScore++; 
+                document.getElementById('game-score').innerText = `🏆 答對: ${gameScore} / ${gameTotalQuestions}`;
+                
                 document.getElementById('game-word').innerText = currentGameObj.w;
                 speak(currentGameObj.w, 'en-US', 0.8); 
                 document.querySelectorAll('#game-options .game-opt-btn').forEach(b => b.disabled = true);
@@ -631,7 +653,6 @@
             setTimeout(() => { isCooldown = false; btnElement.classList.remove('cooldown'); }, 2500);
         }
 
-        // --- 動詞 9 題測驗 ---
         function startVerbQuiz() {
             verbListShuffled = [...verbQuizData].sort(() => 0.5 - Math.random());
             verbCurrentIdx = 0;
@@ -699,20 +720,32 @@
             }
         }
 
-        // --- 第三章：拼字遊戲邏輯 (NEW) ---
+        // --- 第三章：拼字遊戲邏輯 ---
         function setSpellMode(mode) {
             spellMode = mode;
             document.querySelectorAll('#tab-spelling .mode-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('spell-btn-' + mode).classList.add('active');
+            
+            const modeTexts = { 'long': '長母音', 'short': '短母音', 'mixed': '綜合挑戰' };
+            const mText = modeTexts[mode];
+            spellTotalQuestions = mode === 'mixed' ? 90 : 45;
+            
+            document.getElementById('title-spell').innerText = `🧩 單字拼拼樂 (${mText} - 不限時 ${spellTotalQuestions} 題)`;
+
             forceEndSpellGame();
         }
 
         function forceEndSpellGame() {
-            isSpellActive = false; clearInterval(spellTimerInterval); spellTimeLeft = 300;
-            document.getElementById('spell-timer').innerText = `⏳ 05:00`;
-            document.getElementById('spell-score').innerText = `🏆 拼對: 0`;
+            isSpellActive = false; clearInterval(spellTimerInterval);
             document.getElementById('spell-board').style.display = 'none';
             document.getElementById('spell-start-screen').style.display = 'block';
+            document.getElementById('spell-end-msg').style.display = 'none';
+            
+            spellTotalQuestions = spellMode === 'mixed' ? 90 : 45;
+            const btn = document.querySelector('#tab-spelling .game-start-btn');
+            document.getElementById('spell-timer').innerText = `⏳ 00:00`;
+            document.getElementById('spell-score').innerText = `🏆 拼對: 0 / ${spellTotalQuestions}`;
+            btn.innerText = `▶️ 開始 ${spellTotalQuestions} 題挑戰`;
         }
 
         function getSpellingWords(mode) {
@@ -729,31 +762,41 @@
         }
 
         function startSpellGame() {
-            spellScore = 0; spellTimeLeft = 300; isSpellActive = true;
+            spellScore = 0; isSpellActive = true;
+            spellTotalQuestions = spellMode === 'mixed' ? 90 : 45;
             spellPool = getSpellingWords(spellMode).sort(() => 0.5 - Math.random());
             
-            document.getElementById('spell-score').innerText = `🏆 拼對: 0`;
-            document.getElementById('spell-timer').innerText = `⏳ 05:00`;
+            document.getElementById('spell-score').innerText = `🏆 拼對: 0 / ${spellTotalQuestions}`;
             document.getElementById('spell-start-screen').style.display = 'none';
             document.getElementById('spell-board').style.display = 'block';
             
-            // 初始化鍵盤
             initSpellKeyboard();
             
-            nextSpellQuestion();
-            
             if (spellTimerInterval) clearInterval(spellTimerInterval);
+            
+            spellElapsed = 0;
+            document.getElementById('spell-timer').innerText = `⏳ 00:00`;
             spellTimerInterval = setInterval(() => {
-                spellTimeLeft--; document.getElementById('spell-timer').innerText = `⏳ ${formatTime(spellTimeLeft)}`;
-                if (spellTimeLeft <= 0) { endSpellGame(); }
+                spellElapsed++; 
+                document.getElementById('spell-timer').innerText = `⏳ ${formatTime(spellElapsed)}`;
             }, 1000);
+            
+            nextSpellQuestion();
         }
 
-        function endSpellGame() {
+        function endSpellGame(isCompleted = false) {
             isSpellActive = false; clearInterval(spellTimerInterval);
             document.getElementById('spell-board').style.display = 'none';
             document.getElementById('spell-start-screen').style.display = 'block';
-            document.getElementById('spell-end-msg').innerText = `⏰ 時間到！\n恭喜你總共拼對了 ${spellScore} 個單字！`;
+            
+            if (isCompleted) {
+                const finalTime = formatTime(spellElapsed);
+                const mText = spellMode === 'mixed' ? '綜合' : (spellMode === 'long' ? '長母音' : '短母音');
+                document.getElementById('spell-end-msg').innerText = `🎉 太棒了！\n你完成了 ${spellTotalQuestions} 題${mText}拼字挑戰！\n總花費時間：${finalTime}`;
+            } else {
+                document.getElementById('spell-end-msg').innerText = `停止挑戰！\n總共拼對了 ${spellScore} 個單字！`;
+            }
+            
             document.getElementById('spell-end-msg').style.display = 'block';
             document.querySelector('#tab-spelling .game-start-btn').innerText = '🔄 再挑戰一次';
         }
@@ -774,8 +817,10 @@
 
         function nextSpellQuestion() {
             if (!isSpellActive) return;
+
             if (spellPool.length === 0) {
-                spellPool = getSpellingWords(spellMode).sort(() => 0.5 - Math.random());
+                endSpellGame(true);
+                return;
             }
             
             currentSpellObj = spellPool.pop();
@@ -792,14 +837,12 @@
                 document.getElementById('spell-options').style.display = 'flex';
                 document.getElementById('spell-keyboard').style.display = 'none';
                 
-                // --- 新增：產生 3 個混淆用的錯誤發音塊 ---
                 let decoyChunks = [];
                 let allDictWords = getSpellingWords(spellMode);
                 let attempts = 0;
                 while (decoyChunks.length < 3 && attempts < 20) {
                     let randWord = allDictWords[Math.floor(Math.random() * allDictWords.length)];
                     let randChunk = randWord.c[Math.floor(Math.random() * randWord.c.length)];
-                    // 確保混淆選項不會和正確選項重複，也不會和其他混淆選項重複
                     if (!spellCorrectChunks.includes(randChunk) && !decoyChunks.includes(randChunk)) {
                         decoyChunks.push(randChunk);
                     }
@@ -807,7 +850,6 @@
                 }
                 
                 let scrambled = [...spellCorrectChunks, ...decoyChunks].sort(() => 0.5 - Math.random());
-                // ---------------------------------------------
 
                 const optsDiv = document.getElementById('spell-options');
                 optsDiv.innerHTML = '';
@@ -835,9 +877,9 @@
                 span.className = 'spell-slot';
                 if (index < spellCurrentIndex) {
                     span.innerText = spellCorrectChunks[index];
-                    span.style.borderBottomColor = '#27ae60'; // 填對變綠色底線
+                    span.style.borderBottomColor = '#27ae60'; 
                 } else {
-                    span.innerText = ''; // 還沒填入保持空白
+                    span.innerText = ''; 
                 }
                 slotsDiv.appendChild(span);
             });
@@ -881,15 +923,15 @@
             if (spellCurrentIndex === spellCorrectChunks.length) {
                 feedbackText.innerText = '🎉 拼對了！';
                 feedbackText.style.color = '#27ae60';
+                
                 spellScore++;
-                document.getElementById('spell-score').innerText = `🏆 拼對: ${spellScore}`;
+                document.getElementById('spell-score').innerText = `🏆 拼對: ${spellScore} / ${spellTotalQuestions}`;
                 speak(currentSpellObj.en, 'en-US', 0.8);
                 
                 const isAZMode = document.getElementById('az-toggle').checked;
                 if (isAZMode) {
                     document.querySelectorAll('.key-btn').forEach(b => b.disabled = true);
                 } else {
-                    // 如果不是 A-Z 模式，答對後隱藏所有剩下的(錯誤的)按鈕
                     document.querySelectorAll('#spell-options .game-opt-btn').forEach(b => b.style.visibility = 'hidden');
                 }
                 
