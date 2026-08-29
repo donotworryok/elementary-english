@@ -119,7 +119,7 @@
         .game-opt-btn:disabled { cursor: not-allowed; opacity: 0.9; }
         .game-hint-btn {
             font-size: 1rem; padding: 8px 15px; background-color: #f39c12; color: white;
-            border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
+            border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 5px;
         }
         .game-start-btn {
             font-size: 1.3rem; padding: 15px 30px; background-color: #e74c3c; color: white;
@@ -127,6 +127,15 @@
             box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); animation: pulse 1.5s infinite;
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* 下拉式選單樣式 */
+        .q-select {
+            font-size: 1.1rem; padding: 5px 10px; border: 2px solid #bdc3c7;
+            border-radius: 8px; font-weight: bold; color: #2c3e50;
+            background-color: #fff; cursor: pointer; outline: none;
+            transition: border-color 0.2s;
+        }
+        .q-select:hover, .q-select:focus { border-color: #3498db; }
 
         /* --- 拼字遊戲專屬樣式 --- */
         .spell-game-section { background-color: #fff3e0; border: 3px solid #e67e22; }
@@ -224,12 +233,20 @@
         </div>
 
         <div class="section-container game-section">
-            <h2 id="title-game" style="font-size: 1.2rem;">🎮 長母音 (不限時 45 題)</h2>
+            <h2 id="title-game" style="font-size: 1.2rem;">🎮 長母音填空挑戰</h2>
             <div class="game-stats">
                 <span id="game-timer" style="color: #e67e22;">⏳ 00:00</span>
                 <span id="game-score" style="color: #27ae60;">🏆 答對: 0 / 45</span>
             </div>
             <div id="game-start-screen">
+                <div style="margin-bottom: 20px;">
+                    <label for="phonics-q-count" style="font-weight:bold; color:#7f8c8d; font-size:1.1rem; margin-right: 5px;">📝 選擇挑戰題數：</label>
+                    <select id="phonics-q-count" class="q-select" onchange="updatePhonicsText()">
+                        <option value="15">15 題 (小試身手)</option>
+                        <option value="25">25 題 (一般挑戰)</option>
+                        <option value="45" selected>45 題 (完整題庫)</option>
+                    </select>
+                </div>
                 <p id="game-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
                 <button class="game-start-btn" onclick="startGame()" id="start-btn-text">▶️ 開始 45 題挑戰</button>
             </div>
@@ -279,6 +296,7 @@
                 <button class="game-start-btn" style="background-color: #8e44ad; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3);" onclick="startVerbQuiz()">▶️ 開始 9 題動詞測驗</button>
             </div>
             <div id="verb-board" style="display: none;">
+                <button class="game-hint-btn" style="background-color: #9b59b6;" onclick="playVerbHint()">🔊 聽雙語提示</button>
                 <div class="game-word-display" id="verb-sentence" style="font-size: 1.8rem; letter-spacing: 1px; margin-top: 10px;">I ????? a book.</div>
                 <div class="game-zh-display" id="verb-zh" style="margin-top: 10px;">(我讀一本書)</div>
                 <div id="verb-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 10px;">請選擇正確的動詞：</div>
@@ -305,7 +323,7 @@
         </div>
 
         <div class="section-container spell-game-section">
-            <h2 id="title-spell" style="font-size: 1.2rem;">🧩 單字拼拼樂 (長母音 - 不限時 45 題)</h2>
+            <h2 id="title-spell" style="font-size: 1.2rem;">🧩 單字拼拼樂 (長母音)</h2>
             <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">聽發音，把打亂的發音組合按順序拼出來！</p>
             
             <div class="game-stats">
@@ -314,6 +332,14 @@
             </div>
             
             <div id="spell-start-screen">
+                <div style="margin-bottom: 20px;">
+                    <label for="spell-q-count" style="font-weight:bold; color:#7f8c8d; font-size:1.1rem; margin-right: 5px;">📝 選擇挑戰題數：</label>
+                    <select id="spell-q-count" class="q-select" onchange="updateSpellText()">
+                        <option value="15">15 題 (小試身手)</option>
+                        <option value="25">25 題 (一般挑戰)</option>
+                        <option value="45" selected>45 題 (完整題庫)</option>
+                    </select>
+                </div>
                 <p id="spell-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
                 <button class="game-start-btn" style="background-color: #e67e22; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);" id="spell-start-btn-text" onclick="startSpellGame()">▶️ 開始 45 題挑戰</button>
             </div>
@@ -394,6 +420,8 @@
             const voices = synth.getVoices();
             return voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Zira')) || voices.find(v => v.lang.startsWith('en'));
         }
+        
+        // 單語發音 (原版)
         function speak(text, lang, customRate = 0.8) {
             if (synth.speaking) synth.cancel(); 
             const utterance = new SpeechSynthesisUtterance(text);
@@ -404,6 +432,27 @@
                 if (voice) utterance.voice = voice; 
             }
             synth.speak(utterance);
+        }
+
+        // 新增：雙語夾帶發音 (放慢英文，並夾帶中文)
+        function speakBilingual(enText, zhText, enRate = 0.5, zhRate = 0.8) {
+            if (synth.speaking) synth.cancel();
+
+            // 英文發音設定 (放慢)
+            const enUtterance = new SpeechSynthesisUtterance(enText);
+            enUtterance.lang = 'en-US';
+            enUtterance.rate = enRate;
+            const enVoice = getFemaleUSVoice();
+            if (enVoice) enUtterance.voice = enVoice;
+
+            // 中文發音設定
+            const zhUtterance = new SpeechSynthesisUtterance(zhText);
+            zhUtterance.lang = 'zh-TW';
+            zhUtterance.rate = zhRate;
+
+            // 依序加入發音佇列
+            synth.speak(enUtterance);
+            synth.speak(zhUtterance);
         }
 
         // --- AEIOU 字典區 ---
@@ -484,6 +533,12 @@
         }
 
         // --- 第一章：發音區邏輯 ---
+        function updatePhonicsText() {
+            let q = parseInt(document.getElementById('phonics-q-count').value);
+            document.getElementById('start-btn-text').innerText = `▶️ 開始 ${q} 題挑戰`;
+            document.getElementById('game-score').innerText = `🏆 答對: 0 / ${q}`;
+        }
+
         function setMode(mode) {
             currentMode = mode;
             document.querySelectorAll('#tab-phonics .mode-btn').forEach(btn => btn.classList.remove('active'));
@@ -493,9 +548,7 @@
             const mText = modeTexts[mode];
             document.getElementById('title-main').innerText = `🎲 綜合順序 (${mText})`;
             document.getElementById('title-drill').innerText = `🎯 單一字母特訓 (${mText})`;
-            
-            gameTotalQuestions = (mode === 'mixed') ? 90 : 45;
-            document.getElementById('title-game').innerText = `🎮 ${mText} (不限時 ${gameTotalQuestions} 題)`;
+            document.getElementById('title-game').innerText = `🎮 ${mText} 填空挑戰`;
 
             document.getElementById('example-display').innerText = '請點擊上方字母！';
             document.getElementById('drill-display').innerText = `準備練習 ${currentDrillVowel}！`;
@@ -543,23 +596,29 @@
             document.getElementById('game-start-screen').style.display = 'block';
             document.getElementById('game-end-msg').style.display = 'none';
             
-            gameTotalQuestions = currentMode === 'mixed' ? 90 : 45;
             document.getElementById('game-timer').innerText = `⏳ 00:00`;
-            document.getElementById('game-score').innerText = `🏆 答對: 0 / ${gameTotalQuestions}`;
-            document.getElementById('start-btn-text').innerText = `▶️ 開始 ${gameTotalQuestions} 題挑戰`;
+            updatePhonicsText();
         }
 
         function startGame() {
             gameScore = 0; isGameActive = true;
-            gameTotalQuestions = currentMode === 'mixed' ? 90 : 45;
-            document.getElementById('game-score').innerText = `🏆 答對: 0 / ${gameTotalQuestions}`;
-            document.getElementById('game-start-screen').style.display = 'none';
-            document.getElementById('game-board').style.display = 'block';
-
+            
             if (currentMode === 'short') { gameWordsPool = [...shortGameWords]; }
             else if (currentMode === 'mixed') { gameWordsPool = [...mixedGameWords]; }
             else { gameWordsPool = [...longGameWords]; }
+            
             gameWordsPool.sort(() => 0.5 - Math.random());
+
+            // 依據下拉選單限制題數
+            let q = parseInt(document.getElementById('phonics-q-count').value);
+            if (gameWordsPool.length > q) {
+                gameWordsPool = gameWordsPool.slice(0, q);
+            }
+            gameTotalQuestions = gameWordsPool.length;
+
+            document.getElementById('game-score').innerText = `🏆 答對: 0 / ${gameTotalQuestions}`;
+            document.getElementById('game-start-screen').style.display = 'none';
+            document.getElementById('game-board').style.display = 'block';
 
             if(gameTimerInterval) clearInterval(gameTimerInterval);
             
@@ -649,8 +708,12 @@
             const data = verbData[index];
             document.getElementById('verb-display').innerText = data.s;
             document.getElementById('verb-zh-display').innerText = data.zh;
-            speak(`${data.v}. ${data.s}`, 'en-US', 0.8);
-            setTimeout(() => { isCooldown = false; btnElement.classList.remove('cooldown'); }, 2500);
+            
+            // 使用新建立的雙語發音函數，將英文放慢到 0.5 並且夾帶中文 0.8
+            speakBilingual(`${data.v}. ${data.s}`, data.zh, 0.5, 0.8);
+            
+            // 將冷卻時間拉長，確保雙語有足夠的時間唸完不被卡掉
+            setTimeout(() => { isCooldown = false; btnElement.classList.remove('cooldown'); }, 4000);
         }
 
         function startVerbQuiz() {
@@ -699,6 +762,13 @@
             });
         }
 
+        function playVerbHint() {
+            if(currentVerbObj) {
+                // 播放雙語提示發音
+                speakBilingual(currentVerbObj.sentence, currentVerbObj.zh, 0.5, 0.8);
+            }
+        }
+
         function checkVerbAnswer(ans, btn) {
             const feedbackText = document.getElementById('verb-feedback');
             
@@ -711,8 +781,12 @@
                 document.getElementById('verb-sentence').innerText = currentVerbObj.sentence;
                 document.querySelectorAll('#verb-options .game-opt-btn').forEach(b => b.disabled = true);
 
+                // 答對時，用慢速英文夾帶中文的方式唸出完整句子
+                speakBilingual(currentVerbObj.sentence, currentVerbObj.zh, 0.5, 0.8);
+
                 verbCurrentIdx++;
-                setTimeout(() => { loadVerbQuestion(); }, 1500);
+                // 延長跳轉下一題的時間，確保雙語能順利唸完 (原本 1500 -> 3500)
+                setTimeout(() => { loadVerbQuestion(); }, 3500);
 
             } else {
                 btn.style.backgroundColor = '#e74c3c'; btn.style.color = 'white'; btn.style.borderColor = '#e74c3c'; btn.disabled = true;
@@ -721,6 +795,12 @@
         }
 
         // --- 第三章：拼字遊戲邏輯 ---
+        function updateSpellText() {
+            let q = parseInt(document.getElementById('spell-q-count').value);
+            document.getElementById('spell-start-btn-text').innerText = `▶️ 開始 ${q} 題挑戰`;
+            document.getElementById('spell-score').innerText = `🏆 拼對: 0 / ${q}`;
+        }
+
         function setSpellMode(mode) {
             spellMode = mode;
             document.querySelectorAll('#tab-spelling .mode-btn').forEach(btn => btn.classList.remove('active'));
@@ -728,9 +808,7 @@
             
             const modeTexts = { 'long': '長母音', 'short': '短母音', 'mixed': '綜合挑戰' };
             const mText = modeTexts[mode];
-            spellTotalQuestions = mode === 'mixed' ? 90 : 45;
-            
-            document.getElementById('title-spell').innerText = `🧩 單字拼拼樂 (${mText} - 不限時 ${spellTotalQuestions} 題)`;
+            document.getElementById('title-spell').innerText = `🧩 單字拼拼樂 (${mText})`;
 
             forceEndSpellGame();
         }
@@ -741,11 +819,8 @@
             document.getElementById('spell-start-screen').style.display = 'block';
             document.getElementById('spell-end-msg').style.display = 'none';
             
-            spellTotalQuestions = spellMode === 'mixed' ? 90 : 45;
-            const btn = document.querySelector('#tab-spelling .game-start-btn');
             document.getElementById('spell-timer').innerText = `⏳ 00:00`;
-            document.getElementById('spell-score').innerText = `🏆 拼對: 0 / ${spellTotalQuestions}`;
-            btn.innerText = `▶️ 開始 ${spellTotalQuestions} 題挑戰`;
+            updateSpellText();
         }
 
         function getSpellingWords(mode) {
@@ -763,8 +838,14 @@
 
         function startSpellGame() {
             spellScore = 0; isSpellActive = true;
-            spellTotalQuestions = spellMode === 'mixed' ? 90 : 45;
             spellPool = getSpellingWords(spellMode).sort(() => 0.5 - Math.random());
+            
+            // 依據下拉選單限制題數
+            let q = parseInt(document.getElementById('spell-q-count').value);
+            if(spellPool.length > q) {
+                spellPool = spellPool.slice(0, q);
+            }
+            spellTotalQuestions = spellPool.length;
             
             document.getElementById('spell-score').innerText = `🏆 拼對: 0 / ${spellTotalQuestions}`;
             document.getElementById('spell-start-screen').style.display = 'none';
@@ -968,6 +1049,12 @@
             } catch (error) {
                 transDisplay.innerText = "翻譯失敗，請檢查網路。"; speak(word, 'en-US');
             }
+        }
+
+        // --- 網頁載入時初始化文字 ---
+        window.onload = function() {
+            updatePhonicsText();
+            updateSpellText();
         }
     </script>
 </body>
