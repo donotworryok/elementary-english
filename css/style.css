@@ -1,0 +1,201 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    background-color: #f4f7f6;
+    color: #333;
+    padding: 15px;
+    margin: 0;
+}
+h1 { color: #2c3e50; margin-bottom: 5px; font-size: 1.8rem; }
+
+/* --- 頂部導覽分頁 (Tabs) --- */
+.nav-tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 25px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.tab-btn {
+    font-size: 1.1rem; padding: 10px 15px; border: none; border-radius: 12px;
+    background-color: transparent; color: #7f8c8d; font-weight: bold; cursor: pointer; transition: all 0.3s ease;
+}
+.tab-btn.active {
+    background-color: #3498db; color: white;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); transform: scale(1.05);
+}
+.tab-content { display: none; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- 模式切換按鈕 --- */
+.mode-selector {
+    margin: 10px auto 20px auto;
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;
+}
+.mode-btn {
+    font-size: 1.1rem; padding: 8px 18px; cursor: pointer;
+    border: 3px solid transparent; border-radius: 50px;
+    background-color: #ecf0f1; color: #7f8c8d; font-weight: bold; transition: all 0.3s ease;
+}
+.mode-btn.active {
+    background-color: #fff; color: #e67e22; border-color: #e67e22;
+    box-shadow: 0 4px 10px rgba(230, 126, 34, 0.2); transform: scale(1.05);
+}
+
+/* 基礎按鈕樣式 */
+.vowel-btn, .drill-vowel-btn {
+    cursor: pointer; border: none; border-radius: 12px; color: #fff;
+    font-weight: bold; transition: transform 0.1s, opacity 0.3s;
+}
+.vowel-btn:active, .drill-vowel-btn:active { transform: scale(0.95); }
+.cooldown { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+
+/* 動詞按鈕樣式 */
+.verb-btn {
+    font-size: 1.2rem; padding: 10px 15px; background-color: #34495e; color: white;
+    border: none; border-radius: 10px; cursor: pointer; font-weight: bold;
+    transition: transform 0.1s, background-color 0.3s; box-shadow: 0 3px 5px rgba(0,0,0,0.15);
+}
+.verb-btn:active { transform: scale(0.95); }
+.verb-btn:hover { background-color: #2c3e50; }
+
+/* 顏色定義 */
+.bg-a { background-color: #FF6B6B; }
+.bg-e { background-color: #4ECDC4; }
+.bg-i { background-color: #45B7D1; }
+.bg-o { background-color: #F9CA24; }
+.bg-u { background-color: #9B59B6; }
+
+/* --- 區塊共用樣式 --- */
+.section-container {
+    background-color: #fff; padding: 20px; border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 600px; margin: 15px auto;
+}
+.vowel-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+.vowel-btn { font-size: 1.8rem; padding: 12px 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+#example-display, #drill-display { font-size: 1.5rem; color: #e74c3c; font-weight: bold; min-height: 40px; margin-top: 10px; }
+.spell-text { color: #2980b9; font-family: monospace; font-size: 1.6rem; letter-spacing: 2px; }
+
+/* 獨立特訓區 */
+.drill-section { background-color: #fff9e6; border: 3px dashed #F9CA24; }
+.drill-vowel-btn { font-size: 1.2rem; padding: 8px 18px; opacity: 0.4; }
+.drill-vowel-btn.active { opacity: 1; box-shadow: 0 0 10px rgba(0,0,0,0.3); transform: scale(1.1); }
+.play-drill-btn {
+    font-size: 1.2rem; padding: 12px 20px; background-color: #2ecc71; color: white;
+    border: none; border-radius: 10px; cursor: pointer; margin-top: 10px; font-weight: bold; width: 100%;
+}
+.play-drill-btn:active { background-color: #27ae60; transform: scale(0.98); }
+
+/* --- 遊戲區塊樣式 --- */
+.game-section { background-color: #e8f8f5; border: 3px solid #1abc9c; }
+.game-stats {
+    display: flex; justify-content: space-around; font-size: 1.3rem; 
+    font-weight: bold; margin-bottom: 15px; background-color: #fff;
+    padding: 10px; border-radius: 10px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+.game-word-display {
+    font-size: 2.4rem; letter-spacing: 2px; font-weight: bold; color: #2c3e50;
+    margin: 15px 0 5px 0; font-family: monospace;
+}
+.game-zh-display { font-size: 1.2rem; color: #7f8c8d; margin-bottom: 15px; font-weight: bold; }
+.game-options-container { display: flex; justify-content: center; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+.game-opt-btn {
+    font-size: 1.5rem; padding: 10px 25px; border: 2px solid #bdc3c7; background-color: #fff;
+    border-radius: 10px; cursor: pointer; font-weight: bold; color: #34495e; transition: all 0.2s;
+}
+.game-opt-btn:hover:not(:disabled) { border-color: #3498db; color: #3498db; }
+.game-opt-btn:disabled { cursor: not-allowed; opacity: 0.9; }
+.game-hint-btn {
+    font-size: 1rem; padding: 8px 15px; background-color: #f39c12; color: white;
+    border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 5px;
+}
+.game-start-btn {
+    font-size: 1.3rem; padding: 15px 30px; background-color: #e74c3c; color: white;
+    border: none; border-radius: 12px; cursor: pointer; font-weight: bold;
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+/* 下拉式選單樣式 */
+.q-select {
+    font-size: 1.1rem; padding: 5px 10px; border: 2px solid #bdc3c7;
+    border-radius: 8px; font-weight: bold; color: #2c3e50;
+    background-color: #fff; cursor: pointer; outline: none;
+    transition: border-color 0.2s;
+}
+.q-select:hover, .q-select:focus { border-color: #3498db; }
+
+/* --- 拼字遊戲專屬樣式 --- */
+.spell-game-section { background-color: #fff3e0; border: 3px solid #e67e22; }
+.spell-slot-container {
+    display: flex; justify-content: center; gap: 10px; margin: 25px 0 15px 0; min-height: 50px;
+}
+.spell-slot {
+    font-size: 2.5rem; font-weight: bold; color: #2c3e50;
+    border-bottom: 4px solid #34495e; min-width: 40px; text-align: center; padding-bottom: 5px;
+    font-family: monospace; transition: all 0.3s ease;
+}
+
+/* A-Z鍵盤樣式 */
+.keyboard-container {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 20px 0; max-width: 100%;
+}
+.key-btn {
+    font-size: 1.4rem; padding: 10px 12px; min-width: 42px;
+    background-color: #fff; border: 2px solid #bdc3c7; border-radius: 8px;
+    cursor: pointer; font-weight: bold; color: #34495e; transition: all 0.15s;
+    text-transform: lowercase; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.key-btn:active { transform: scale(0.9); }
+.key-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* --- 動詞區塊樣式 --- */
+.verb-section { background-color: #fce4ec; border: 3px solid #f06292; }
+.verb-game-section { background-color: #f5eef8; border: 3px solid #9b59b6; }
+
+/* --- Reset 按鈕樣式 --- */
+.reset-btn {
+    background-color: #e74c3c; color: white; border: none; padding: 6px 15px;
+    border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.9rem;
+    margin-bottom: 15px; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.reset-btn:hover { background-color: #c0392b; }
+
+/* --- 自訂輸入區 --- */
+input[type="text"] { font-size: 1.1rem; padding: 10px; width: 50%; border: 2px solid #ddd; border-radius: 8px; outline: none; }
+button.speak-btn { font-size: 1.1rem; padding: 10px 15px; background-color: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; margin-left: 5px; }
+
+/* 紀錄顯示字體 */
+.record-text {
+    font-size: 1.1rem; color: #8e44ad; font-weight: bold; margin-bottom: 15px; display: block;
+}
+
+
+/* --- 密碼鎖定畫面 --- */
+#lock-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(44, 62, 80, 0.98); /* 深色半透明背景 */
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999; /* 確保蓋在所有東西的最上層 */
+}
+.lock-box {
+    background: #fff; padding: 30px 40px; border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center;
+}
+.lock-box h2 { margin-top: 0; color: #34495e; }
+#pin-input {
+    font-size: 2rem; width: 150px; text-align: center; letter-spacing: 5px;
+    padding: 10px; margin: 15px 0; border: 2px solid #bdc3c7; border-radius: 10px;
+    outline: none; transition: border-color 0.3s;
+}
+#pin-input:focus { border-color: #3498db; }
+.lock-box button {
+    font-size: 1.2rem; padding: 10px 35px; background-color: #27ae60;
+    color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;
+}
+.lock-box button:active { transform: scale(0.95); }
