@@ -35,7 +35,6 @@ const shortGameWords = [
     {w: 'rub', b: 'r ????? b', a: 'u', zh: '摩擦'}, {w: 'cub', b: 'c ????? b', a: 'u', zh: '幼獸'}, {w: 'tub', b: 't ????? b', a: 'u', zh: '浴缸'}, {w: 'hug', b: 'h ????? g', a: 'u', zh: '擁抱'}, {w: 'bug', b: 'b ????? g', a: 'u', zh: '蟲'}, {w: 'mug', b: 'm ????? g', a: 'u', zh: '馬克杯'}, {w: 'run', b: 'r ????? n', a: 'u', zh: '跑'}, {w: 'bun', b: 'b ????? n', a: 'u', zh: '小圓麵包'}, {w: 'sun', b: 's ????? n', a: 'u', zh: '太陽'}
 ];
 const shortGameAnswers = ['a', 'e', 'i', 'o', 'u'];
-
 const mixedGameWords = [...longGameWords, ...shortGameWords];
 const mixedGameAnswers = [...new Set([...longGameAnswers, ...shortGameAnswers])];
 
@@ -47,3 +46,21 @@ const verbData = [
 ];
 const verbQuizData = verbData.map(d => ({ v: d.v, sentence: d.s, zh: d.zh }));
 const allVerbsList = verbQuizData.map(d => d.v);
+
+// --- 聖心小一檢定資料庫 (NEW) ---
+const sacredHeartData = {
+    family: [
+        {en: 'mother', zh: '媽媽'}, {en: 'father', zh: '爸爸'},
+        {en: 'sister', zh: '姊妹'}, {en: 'brother', zh: '兄弟'},
+        {en: 'grandmother', zh: '奶奶/外婆'}, {en: 'grandfather', zh: '爺爺/外公'}
+    ],
+    weather: [
+        {en: 'sunny', zh: '晴天'}, {en: 'cloudy', zh: '多雲'},
+        {en: 'rainy', zh: '雨天'}, {en: 'windy', zh: '刮風'}
+    ],
+    food: [
+        {en: 'watermelon', zh: '西瓜'}, {en: 'banana', zh: '香蕉'},
+        {en: 'strawberry', zh: '草莓'}, {en: 'carrot', zh: '胡蘿蔔'},
+        {en: 'apple', zh: '蘋果'}, {en: 'lemon', zh: '檸檬'}
+    ]
+};
