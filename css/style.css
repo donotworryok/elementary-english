@@ -90,9 +90,26 @@ h1 { color: #2c3e50; margin-bottom: 20px; font-size: 1.8rem; }
 .game-word-display { font-size: 2.4rem; letter-spacing: 2px; font-weight: bold; color: #2c3e50; margin: 15px 0 5px 0; font-family: monospace; }
 .game-zh-display { font-size: 1.2rem; color: #7f8c8d; margin-bottom: 15px; font-weight: bold; }
 .game-options-container { display: flex; justify-content: center; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
-.game-opt-btn { font-size: 1.5rem; padding: 10px 25px; border: 2px solid #bdc3c7; background-color: #fff; border-radius: 10px; cursor: pointer; font-weight: bold; color: #34495e; transition: all 0.2s; }
-.game-opt-btn:hover:not(:disabled) { border-color: #3498db; color: #3498db; }
-.game-opt-btn:disabled { cursor: not-allowed; opacity: 0.9; }
+.game-opt-btn {
+    font-size: 1.6rem;         /* 👈 補回這個！讓純文字的選項變大 */
+    font-weight: bold;         /* 👈 補回這個！讓字體變粗 */
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; min-width: 130px; padding: 15px; 
+    border: 3px solid #bdc3c7; background-color: #fff;
+    border-radius: 15px; cursor: pointer; color: #34495e; 
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 加入 Q 彈動畫 */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+.game-opt-btn:hover:not(:disabled) { 
+    border-color: #3498db; color: #3498db; 
+    transform: translateY(-5px); box-shadow: 0 8px 15px rgba(52,152,219,0.2); 
+}
+.game-opt-btn:disabled { cursor: not-allowed; opacity: 0.8; }
+
+/* 字卡裡面的大圖案 */
+.card-img { font-size: 3.5rem; line-height: 1; margin-bottom: 5px; }
+/* 字卡裡面的英文單字 */
+.card-text { font-size: 1.4rem; font-weight: bold; }
 .game-hint-btn { font-size: 1rem; padding: 8px 15px; background-color: #f39c12; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 5px; }
 .game-start-btn { font-size: 1.3rem; padding: 15px 30px; background-color: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); animation: pulse 1.5s infinite; }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
