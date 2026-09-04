@@ -3,25 +3,33 @@
 // 包含：發音填空、動詞測驗、單字拼字挑戰
 // ==========================================
 
-// --- P21 發音遊戲變數 ---
+// --- P21 模組專屬變數 ---
 let currentMode = 'long'; 
 let mainIndex = { 'long': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'short': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'mixed': { A: 0, E: 0, I: 0, O: 0, U: 0 } };
 let drillIndex = { 'long': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'short': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'mixed': { A: 0, E: 0, I: 0, O: 0, U: 0 } };
 let currentDrillVowel = 'A'; 
 let isCooldown = false; 
 
+// 發音填空挑戰變數
 let gameScore = 0; let gameTimerInterval = null; let isGameActive = false; let currentGameObj = null; 
 let gameWordsPool = []; let gameElapsed = 0; let gameTotalQuestions = 45;
 
-// --- P21 動詞測驗變數 ---
+// 動詞測驗變數
 let verbListShuffled = []; let verbCurrentIdx = 0; let verbScoreCount = 0; let currentVerbObj = null;
 
-// --- P21 拼字挑戰變數 ---
+// 拼字挑戰變數
 let spellMode = 'long'; let spellScore = 0; let spellTimerInterval = null; let isSpellActive = false; 
 let currentSpellObj = null; let spellCorrectChunks = []; let spellCurrentIndex = 0; 
 let spellPool = []; let spellElapsed = 0; let spellTotalQuestions = 45; 
 
-// --- 💾 P21 專屬存檔邏輯 ---
+// ------------------------------------------
+// 💾 P21 存檔與 UI 更新功能
+// ------------------------------------------
+function toggleMainSequence() {
+    const section = document.getElementById('main-sequence-section');
+    if (section) section.style.display = document.getElementById('hide-main-toggle').checked ? 'none' : 'block';
+}
+
 function saveTimeRecord(key, timeElapsed, score, total) {
     if (score !== total) return false; 
     let currentBest = localStorage.getItem(key);
@@ -31,31 +39,38 @@ function saveTimeRecord(key, timeElapsed, score, total) {
     }
     return false;
 }
+
 function getRecordText(key) {
     let val = localStorage.getItem(key);
     return val ? formatTime(parseInt(val)) : '無';
 }
+
 function updateGameRecordUI() {
     let el = document.getElementById('game-best-record');
     if(el) el.innerText = `👑 最快通關紀錄: ${getRecordText('phonics_' + currentMode)}`;
 }
+
 function updateSpellRecordUI() {
     let el = document.getElementById('spell-best-record');
     if(el) el.innerText = `👑 最快通關紀錄: ${getRecordText('spell_' + spellMode)}`;
 }
+
 function updateVerbRecordUI() {
     let best = localStorage.getItem('verb_best');
     let el = document.getElementById('verb-best-record');
     if(el) el.innerText = `👑 最高得分紀錄: ${best ? best + ' / 9' : '無'}`;
 }
+
 function savePhonicsState() {
     if (!isGameActive) { localStorage.removeItem('phonics_state'); return; }
     localStorage.setItem('phonics_state', JSON.stringify({ mode: currentMode, score: gameScore, elapsed: gameElapsed, pool: gameWordsPool, curr: currentGameObj }));
 }
+
 function saveVerbState() {
     if (document.getElementById('verb-board').style.display === 'none') { localStorage.removeItem('verb_state'); return; }
     localStorage.setItem('verb_state', JSON.stringify({ score: verbScoreCount, idx: verbCurrentIdx, pool: verbListShuffled, curr: currentVerbObj }));
 }
+
 function saveSpellState() {
     if (!isSpellActive) { localStorage.removeItem('spell_state'); return; }
     localStorage.setItem('spell_state', JSON.stringify({ mode: spellMode, score: spellScore, elapsed: spellElapsed, pool: spellPool, curr: currentSpellObj, chunks: spellCorrectChunks, cIdx: spellCurrentIndex }));
@@ -67,9 +82,9 @@ function getActiveExamples() {
     return mixedExamples;
 }
 
-// ==========================================
+// ------------------------------------------
 // 🧩 P21 發音填空邏輯
-// ==========================================
+// ------------------------------------------
 function updatePhonicsText() {
     let el = document.getElementById('phonics-q-count');
     if(!el) return;
@@ -271,9 +286,9 @@ function checkGameAnswer(ans, btn) {
 }
 function playGameHint() { if(currentGameObj && isGameActive) speak(currentGameObj.w, 'en-US', 0.8); }
 
-// ==========================================
+// ------------------------------------------
 // 🏃 P21 動詞測驗邏輯
-// ==========================================
+// ------------------------------------------
 function playVerb(index, btnElement) {
     if (isCooldown) return; 
     isCooldown = true; btnElement.classList.add('cooldown');
@@ -364,9 +379,9 @@ function checkVerbAnswer(ans, btn) {
 }
 function playVerbHint() { if(currentVerbObj) speakBilingual(currentVerbObj.sentence, currentVerbObj.zh, 0.5, 0.8); }
 
-// ==========================================
+// ------------------------------------------
 // 🧩 P21 拼字挑戰邏輯
-// ==========================================
+// ------------------------------------------
 function updateSpellText() {
     let el = document.getElementById('spell-q-count');
     if(!el) return;
