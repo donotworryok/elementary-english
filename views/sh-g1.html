@@ -1,0 +1,48 @@
+<!-- 聖心：單字聽力測驗 -->
+<div id="tab-sh-vocab" class="tab-content">
+    <div class="top-bar"><button class="back-btn" onclick="backToMenu()">🏠 回選單</button></div>
+    <div class="section-container sh-vocab-section">
+        <h2 id="sh-vocab-title" style="font-size: 1.2rem;">🏅 單字聽力測驗</h2>
+        <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">聽英文發音，選出正確的單字！</p>
+        <div class="game-stats">
+            <span id="sh-vocab-progress" style="color: #8e44ad;">📊 第 1 題</span>
+            <span id="sh-vocab-score" style="color: #27ae60;">🏆 得分: 0</span>
+        </div>
+        <div id="sh-vocab-start-screen">
+            <p id="sh-vocab-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
+            <button class="game-start-btn" style="background-color: #e74c3c; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);" onclick="startShVocab()">▶️ 開始測驗</button>
+        </div>
+        <div id="sh-vocab-board" style="display: none;">
+            <button class="game-hint-btn" style="background-color: #e74c3c;" onclick="playShVocabHint()">🔊 再聽一次發音</button>
+            <div class="game-zh-display" id="sh-vocab-zh" style="margin-top: 15px; font-size: 1.8rem; color: #d35400;">(中文)</div>
+            <div id="sh-vocab-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 15px;">請選擇正確的圖案與單字：</div>
+            <div class="game-options-container" id="sh-vocab-options"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 聖心：數字 1-100 是非題 -->
+<div id="tab-sh-number" class="tab-content">
+    <div class="top-bar"><button class="back-btn" onclick="backToMenu()">🏠 回選單</button></div>
+    <div class="section-container sh-number-section">
+        <h2 style="font-size: 1.2rem;">🔢 數字 1-100 聽力是非題</h2>
+        <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">你聽到的數字，跟畫面上的數字一樣嗎？</p>
+        <div class="game-stats">
+            <span id="sh-num-progress" style="color: #2980b9;">📊 第 1 題 / 共 10 題</span>
+            <span id="sh-num-score" style="color: #27ae60;">🏆 得分: 0 / 10</span>
+        </div>
+        <div id="sh-num-start-screen">
+            <p id="sh-num-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
+            <button class="game-start-btn" style="background-color: #2980b9; box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);" onclick="startShNumber()">▶️ 開始 10 題測驗</button>
+        </div>
+        <div id="sh-num-board" style="display: none;">
+            <button class="game-hint-btn" style="background-color: #2980b9;" onclick="playShNumberHint()">🔊 再聽一次數字</button>
+            <div class="big-number-display" id="sh-num-display">50</div>
+            <div id="sh-num-feedback" style="font-weight: bold; font-size: 1.2rem; color: #7f8c8d; margin-top: 10px; min-height: 30px;">請判斷對錯：</div>
+            <div class="tf-btn-container" id="sh-num-options">
+                <button class="tf-btn true-btn" onclick="checkShNumber(true)">✅ 對</button>
+                <button class="tf-btn false-btn" onclick="checkShNumber(false)">❌ 錯</button>
+            </div>
+        </div>
+    </div>
+</div>

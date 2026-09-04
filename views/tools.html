@@ -1,0 +1,10 @@
+<!-- 其他工具：自訂字典 -->
+<div id="tab-custom" class="tab-content">
+    <div class="top-bar"><button class="back-btn" onclick="backToMenu()">🏠 回選單</button></div>
+    <div class="section-container">
+        <h2 style="font-size: 1.2rem;">🔍 自訂發音翻譯</h2>
+        <input type="text" id="custom-word" placeholder="輸入單字，例如 Apple" onkeydown="if(event.key === 'Enter') speakCustomWord()">
+        <button class="speak-btn" onclick="speakCustomWord()">唸出</button>
+        <div id="translation-display" style="margin-top: 15px; font-size: 1.2rem; color: #27ae60; font-weight: bold;"></div>
+    </div>
+</div>
