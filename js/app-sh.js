@@ -3,10 +3,11 @@
 // 包含：單字聽力測驗、數字 1-100 是非題
 // ==========================================
 
-// 狀態變數
+// --- 聖心單字聽力測驗變數 ---
 let shVocabCategory = ''; let shVocabPool = []; let shVocabCurrent = null;
 let shVocabScore = 0; let shVocabTotal = 0; let isShVocabActive = false;
 
+// --- 聖心數字是非題變數 ---
 let shNumScore = 0; let shNumCurrentIdx = 0; let shNumTotal = 10;
 let shNumSpoken = 0; let shNumDisplayed = 0; let isShNumActive = false;
 
@@ -51,16 +52,24 @@ function nextShVocab() {
     let currentQNumber = shVocabTotal - shVocabPool.length;
     document.getElementById('sh-vocab-progress').innerText = `📊 第 ${currentQNumber} / ${shVocabTotal} 題`;
     document.getElementById('sh-vocab-zh').innerText = `(${shVocabCurrent.zh})`;
-    document.getElementById('sh-vocab-feedback').innerText = '請選擇正確的英文單字：';
+    document.getElementById('sh-vocab-feedback').innerText = '請選出正確的圖案與單字：';
     document.getElementById('sh-vocab-feedback').style.color = '#7f8c8d';
 
     let wrongAnswers = sacredHeartData[shVocabCategory].filter(item => item.en !== shVocabCurrent.en).sort(() => 0.5 - Math.random());
-    let options = [shVocabCurrent.en, wrongAnswers[0].en, wrongAnswers[1].en].sort(() => 0.5 - Math.random());
+    let options = [shVocabCurrent, wrongAnswers[0], wrongAnswers[1]].sort(() => 0.5 - Math.random());
     
-    const optsDiv = document.getElementById('sh-vocab-options'); optsDiv.innerHTML = '';
-    options.forEach(opt => {
-        const btn = document.createElement('button'); btn.className = 'game-opt-btn'; btn.innerText = opt;
-        btn.onclick = function() { checkShVocabAnswer(opt, this); }; optsDiv.appendChild(btn);
+    const optsDiv = document.getElementById('sh-vocab-options'); 
+    optsDiv.innerHTML = '';
+    
+    options.forEach(optObj => {
+        const btn = document.createElement('button'); 
+        btn.className = 'game-opt-btn'; 
+        btn.innerHTML = `
+            <div class="card-img">${optObj.img}</div>
+            <div class="card-text">${optObj.en}</div>
+        `;
+        btn.onclick = function() { checkShVocabAnswer(optObj.en, this); }; 
+        optsDiv.appendChild(btn);
     });
     
     setTimeout(() => { if(isShVocabActive) speak(shVocabCurrent.en, 'en-US', 0.8); }, 500);
@@ -75,12 +84,10 @@ function checkShVocabAnswer(ans, btn) {
         shVocabScore++; 
         document.getElementById('sh-vocab-score').innerText = `🏆 得分: ${shVocabScore}`;
         document.querySelectorAll('#sh-vocab-options .game-opt-btn').forEach(b => b.disabled = true);
-        speakBilingual(shVocabCurrent.en, shVocabCurrent.zh, 0.8, 0.8);
-        setTimeout(() => { nextShVocab(); }, 2000);
+        setTimeout(() => { nextShVocab(); }, 1200);
     } else {
         btn.style.backgroundColor = '#e74c3c'; btn.style.color = 'white'; btn.style.borderColor = '#e74c3c'; btn.disabled = true;
         feedbackText.innerText = '❌ 答錯囉，再試一次！'; feedbackText.style.color = '#e74c3c';
-        speak(shVocabCurrent.en, 'en-US', 0.8); 
     }
 }
 function playShVocabHint() { if(shVocabCurrent && isShVocabActive) speak(shVocabCurrent.en, 'en-US', 0.8); }
@@ -135,7 +142,6 @@ function checkShNumber(userSaidTrue) {
         feedbackText.innerText = '❌ 答錯囉！其實是 ' + shNumSpoken; 
         feedbackText.style.color = '#e74c3c';
     }
-    speak(shNumSpoken.toString(), 'en-US', 0.8);
-    setTimeout(() => { nextShNumber(); }, 2000);
+    setTimeout(() => { nextShNumber(); }, 1200);
 }
 function playShNumberHint() { if(isShNumActive) speak(shNumSpoken.toString(), 'en-US', 0.8); }
