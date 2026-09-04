@@ -48,19 +48,20 @@ const verbQuizData = verbData.map(d => ({ v: d.v, sentence: d.s, zh: d.zh }));
 const allVerbsList = verbQuizData.map(d => d.v);
 
 // --- 聖心小一檢定資料庫 (NEW) ---
+// --- 聖心小一檢定資料庫 (加入 Emoji 圖像) ---
 const sacredHeartData = {
     family: [
-        {en: 'mother', zh: '媽媽'}, {en: 'father', zh: '爸爸'},
-        {en: 'sister', zh: '姊妹'}, {en: 'brother', zh: '兄弟'},
-        {en: 'grandmother', zh: '奶奶/外婆'}, {en: 'grandfather', zh: '爺爺/外公'}
+        {en: 'mother', zh: '媽媽', img: '👩'}, {en: 'father', zh: '爸爸', img: '👨'},
+        {en: 'sister', zh: '姊妹', img: '👧'}, {en: 'brother', zh: '兄弟', img: '👦'},
+        {en: 'grandmother', zh: '奶奶/外婆', img: '👵'}, {en: 'grandfather', zh: '爺爺/外公', img: '👴'}
     ],
     weather: [
-        {en: 'sunny', zh: '晴天'}, {en: 'cloudy', zh: '多雲'},
-        {en: 'rainy', zh: '雨天'}, {en: 'windy', zh: '刮風'}
+        {en: 'sunny', zh: '晴天', img: '☀️'}, {en: 'cloudy', zh: '多雲', img: '☁️'},
+        {en: 'rainy', zh: '雨天', img: '🌧️'}, {en: 'windy', zh: '刮風', img: '🌬️'}
     ],
     food: [
-        {en: 'watermelon', zh: '西瓜'}, {en: 'banana', zh: '香蕉'},
-        {en: 'strawberry', zh: '草莓'}, {en: 'carrot', zh: '胡蘿蔔'},
-        {en: 'apple', zh: '蘋果'}, {en: 'lemon', zh: '檸檬'}
+        {en: 'watermelon', zh: '西瓜', img: '🍉'}, {en: 'banana', zh: '香蕉', img: '🍌'},
+        {en: 'strawberry', zh: '草莓', img: '🍓'}, {en: 'carrot', zh: '胡蘿蔔', img: '🥕'},
+        {en: 'apple', zh: '蘋果', img: '🍎'}, {en: 'lemon', zh: '檸檬', img: '🍋'}
     ]
 };
