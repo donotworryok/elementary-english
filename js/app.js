@@ -3,7 +3,11 @@
 // 包含：密碼鎖、選單切換、發音引擎、共用工具
 // ==========================================
 
-// --- 🔐 密碼鎖邏輯 ---
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+// ------------------------------------------
+// 🔐 密碼鎖邏輯
+// ------------------------------------------
 const SECRET_PIN = "88888"; 
 
 function checkPin() {
@@ -18,9 +22,9 @@ function checkPin() {
     }
 }
 
-// --- 🛠️ 共用工具與初始化 ---
-const delay = ms => new Promise(res => setTimeout(res, ms));
-
+// ------------------------------------------
+// 🛠️ 共用工具與初始化
+// ------------------------------------------
 function formatTime(seconds) { 
     return `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`; 
 }
@@ -28,7 +32,6 @@ function formatTime(seconds) {
 window.onload = function() {
     document.getElementById('main-menu').style.display = 'flex';
     
-    // 呼叫 P21 模組的初始化功能 (安全檢查)
     if(typeof updateGameRecordUI === 'function') updateGameRecordUI();
     if(typeof updateSpellRecordUI === 'function') updateSpellRecordUI();
     if(typeof updateVerbRecordUI === 'function') updateVerbRecordUI();
@@ -38,14 +41,15 @@ window.onload = function() {
     let sCountEl = document.getElementById('spell-q-count');
     if(sCountEl && typeof updateSpellText === 'function') updateSpellText();
     
-    // 檢查是否已解鎖過
     if (sessionStorage.getItem('isUnlocked') === 'true') {
         const lockScreen = document.getElementById('lock-screen');
         if (lockScreen) lockScreen.style.display = 'none';
     }
 };
 
-// --- 🌟 目錄導覽切換邏輯 ---
+// ------------------------------------------
+// 🌟 目錄導覽切換邏輯
+// ------------------------------------------
 function openSection(tabId, subCategory = null) {
     document.getElementById('main-menu').style.display = 'none';
     document.getElementById('main-header').style.display = 'none';
@@ -58,7 +62,6 @@ function openSection(tabId, subCategory = null) {
 }
 
 function backToMenu() {
-    // 跨模組中斷測驗 (安全檢查)
     if (typeof isGameActive !== 'undefined' && isGameActive && typeof forceEndGame === 'function') forceEndGame();
     if (typeof isSpellActive !== 'undefined' && isSpellActive && typeof forceEndSpellGame === 'function') forceEndSpellGame(false);
     if (typeof isShVocabActive !== 'undefined') isShVocabActive = false; 
@@ -95,10 +98,12 @@ function resetCurrentTab(tabName) {
 
 function toggleMainSequence() {
     const section = document.getElementById('main-sequence-section');
-    section.style.display = document.getElementById('hide-main-toggle').checked ? 'none' : 'block';
+    if (section) section.style.display = document.getElementById('hide-main-toggle').checked ? 'none' : 'block';
 }
 
-// --- 🔊 發音引擎邏輯 ---
+// ------------------------------------------
+// 🔊 發音引擎邏輯
+// ------------------------------------------
 const synth = window.speechSynthesis;
 function getFemaleUSVoice() {
     const voices = synth.getVoices();
@@ -133,7 +138,9 @@ function speakBilingual(enText, zhText, enRate = 0.5, zhRate = 0.8) {
     }
 }
 
-// --- 🔍 自訂字典翻譯邏輯 ---
+// ------------------------------------------
+// 🔍 自訂字典翻譯邏輯
+// ------------------------------------------
 async function speakCustomWord() {
     const transDisplay = document.getElementById('translation-display');
     const word = document.getElementById('custom-word').value.trim();
