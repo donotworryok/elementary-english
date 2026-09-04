@@ -12,6 +12,50 @@ h1 { color: #2c3e50; margin-bottom: 20px; font-size: 1.8rem; }
 .menu-container {
     max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;
 }
+
+/* --- 第一層：大目錄按鈕專屬樣式 (精緻 App 風格) --- */
+.top-level-layout {
+    display: flex; flex-direction: column; gap: 20px; align-items: center; justify-content: center;
+    padding: 20px; max-width: 400px; margin: 0 auto;
+}
+
+.top-menu-btn {
+    display: flex; align-items: center; justify-content: flex-start; gap: 20px;
+    width: 100%; padding: 25px 30px;
+    background: #ffffff; border: none; border-radius: 20px;
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04); /* 柔和立體陰影 */
+    position: relative; overflow: hidden;
+}
+
+/* 加上左側粗邊條，增加視覺層次 */
+.top-menu-btn::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 10px;
+}
+
+/* 聖心按鈕專屬配色 (溫暖紅) */
+.sh-btn::before { background-color: #e74c3c; }
+.sh-btn:hover { box-shadow: 0 15px 25px rgba(231, 76, 60, 0.2); transform: translateY(-5px); }
+
+/* P21 按鈕專屬配色 (知性藍) */
+.p21-btn::before { background-color: #3498db; }
+.p21-btn:hover { box-shadow: 0 15px 25px rgba(52, 152, 219, 0.2); transform: translateY(-5px); }
+
+/* 工具按鈕專屬配色 (沉穩灰) */
+.tool-btn::before { background-color: #95a5a6; }
+.tool-btn:hover { box-shadow: 0 15px 25px rgba(149, 165, 166, 0.2); transform: translateY(-5px); }
+
+/* 點擊時的下壓微反饋 */
+.top-menu-btn:active { transform: scale(0.97); box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+
+.top-menu-btn .icon { font-size: 3.5rem; line-height: 1; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1)); }
+.top-menu-btn .text { font-size: 1.6rem; font-weight: 800; color: #2c3e50; letter-spacing: 1px; }
+
+/* 第二層：子目錄容器樣式 */
+.submenu-container {
+    max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; animation: fadeIn 0.4s ease;
+}
+
 .menu-section {
     background: #fff; border-radius: 15px; padding: 20px 20px 10px 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 8px solid #ccc;
