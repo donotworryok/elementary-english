@@ -63,5 +63,29 @@ const sacredHeartData = {
         {en: 'watermelon', zh: '西瓜', img: '🍉'}, {en: 'banana', zh: '香蕉', img: '🍌'},
         {en: 'strawberry', zh: '草莓', img: '🍓'}, {en: 'carrot', zh: '胡蘿蔔', img: '🥕'},
         {en: 'apple', zh: '蘋果', img: '🍎'}, {en: 'lemon', zh: '檸檬', img: '🍋'}
+    ],
+
+    az: [
+        {en: 'apple', zh: '蘋果', img: '🍎'}, {en: 'ball', zh: '球', img: '⚽'},
+        {en: 'cat', zh: '貓', img: '🐱'}, {en: 'duck', zh: '鴨子', img: '🦆'},
+        {en: 'elephant', zh: '大象', img: '🐘'}, {en: 'fish', zh: '魚', img: '🐟'},
+        {en: 'girl', zh: '女孩', img: '👧'}, {en: 'hand', zh: '手', img: '🖐️'},
+        {en: 'ice cream', zh: '冰淇淋', img: '🍦'}, {en: 'jar', zh: '罐子', img: '🫙'},
+        {en: 'key', zh: '鑰匙', img: '🔑'}, {en: 'leaf', zh: '葉子', img: '🍃'},
+        {en: 'monkey', zh: '猴子', img: '🐒'}, {en: 'nest', zh: '鳥巢', img: '🪹'},
+        {en: 'octopus', zh: '章魚', img: '🐙'}, {en: 'pig', zh: '豬', img: '🐷'},
+        {en: 'queen', zh: '皇后', img: '👸'}, {en: 'ruler', zh: '尺', img: '📏'},
+        {en: 'strawberry', zh: '草莓', img: '🍓'}, {en: 'umbrella', zh: '雨傘', img: '☂️'}, 
+        {en: 'van', zh: '廂型車', img: '🚐'}, {en: 'wheel', zh: '輪子', img: '🛞'}, 
+        {en: 'xylophone', zh: '木琴', img: '🎹'}, {en: 'yarn', zh: '毛線', img: '🧶'}, 
+        {en: 'zebra', zh: '斑馬', img: '🦓'}
+    ],
+    shapes: [
+        {en: 'circle', zh: '圓形', img: '🔴'},
+        {en: 'square', zh: '正方形', img: '🟦'},
+        {en: 'triangle', zh: '三角形', img: '🔺'},
+        {en: 'oval', zh: '橢圓形', img: '🥚'},
+        {en: 'diamond', zh: '菱形', img: '🔶'},
+        {en: 'rectangle', zh: '長方形', img: '🎫'}
     ]
 };
