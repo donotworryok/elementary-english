@@ -1,14 +1,11 @@
 // ==========================================
 // 檔案 1: 共用核心模組 (app.js)
-// 包含：密碼鎖、選單切換、發音引擎、共用工具
+// 包含：密碼鎖、動態視圖載入、發音引擎
 // ==========================================
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
-
-// ------------------------------------------
-// 🔐 密碼鎖邏輯
-// ------------------------------------------
 const SECRET_PIN = "88888"; 
+let currentSubMenu = ''; 
 
 function checkPin() {
     const input = document.getElementById('pin-input').value;
@@ -22,24 +19,13 @@ function checkPin() {
     }
 }
 
-// ------------------------------------------
-// 🛠️ 共用工具與初始化
-// ------------------------------------------
 function formatTime(seconds) { 
     return `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`; 
 }
 
 window.onload = function() {
-    document.getElementById('main-menu').style.display = 'flex';
-    
-    if(typeof updateGameRecordUI === 'function') updateGameRecordUI();
-    if(typeof updateSpellRecordUI === 'function') updateSpellRecordUI();
-    if(typeof updateVerbRecordUI === 'function') updateVerbRecordUI();
-    
-    let qCountEl = document.getElementById('phonics-q-count');
-    if(qCountEl && typeof updatePhonicsText === 'function') updatePhonicsText();
-    let sCountEl = document.getElementById('spell-q-count');
-    if(sCountEl && typeof updateSpellText === 'function') updateSpellText();
+    const topMenu = document.getElementById('top-level-menu');
+    if (topMenu) topMenu.style.display = 'flex';
     
     if (sessionStorage.getItem('isUnlocked') === 'true') {
         const lockScreen = document.getElementById('lock-screen');
@@ -47,17 +33,55 @@ window.onload = function() {
     }
 };
 
-// ------------------------------------------
-// 🌟 目錄導覽切換邏輯
-// ------------------------------------------
-function openSection(tabId, subCategory = null) {
-    document.getElementById('main-menu').style.display = 'none';
-    document.getElementById('main-header').style.display = 'none';
-    document.querySelectorAll('.tab-content').forEach(tab => { tab.style.display = 'none'; });
-    document.getElementById(tabId).style.display = 'block';
+function openSubMenu(subMenuId) {
+    document.getElementById('top-level-menu').style.display = 'none';
+    document.querySelectorAll('.submenu-container').forEach(el => el.style.display = 'none');
+    document.getElementById(subMenuId).style.display = 'block';
+    currentSubMenu = subMenuId; 
+}
 
-    if (tabId === 'tab-sh-vocab' && subCategory && typeof setupShVocab === 'function') {
-        setupShVocab(subCategory);
+function backToTopMenu() {
+    document.querySelectorAll('.submenu-container').forEach(el => el.style.display = 'none');
+    document.getElementById('top-level-menu').style.display = 'flex';
+    currentSubMenu = '';
+}
+
+// 動態載入外部 HTML 視圖
+async function loadView(viewName, tabId, subCategory = null) {
+    const contentBox = document.getElementById('app-content');
+    
+    try {
+        const response = await fetch(`views/${viewName}.html`);
+        if (!response.ok) throw new Error(`找不到視圖: ${viewName}.html`);
+        
+        contentBox.innerHTML = await response.text();
+        contentBox.style.display = 'block';
+        
+        document.getElementById('top-level-menu').style.display = 'none';
+        document.querySelectorAll('.submenu-container').forEach(el => el.style.display = 'none');
+        document.getElementById('main-header').style.display = 'none';
+        
+        // 隱藏剛載入的所有 tab，只顯示目標 tab
+        document.querySelectorAll('#app-content .tab-content').forEach(tab => tab.style.display = 'none');
+        const targetTab = document.getElementById(tabId);
+        if (targetTab) targetTab.style.display = 'block';
+
+        // 觸發模組 UI 初始化
+        if(typeof updateGameRecordUI === 'function') updateGameRecordUI();
+        if(typeof updateSpellRecordUI === 'function') updateSpellRecordUI();
+        if(typeof updateVerbRecordUI === 'function') updateVerbRecordUI();
+        
+        let qCountEl = document.getElementById('phonics-q-count');
+        if(qCountEl && typeof updatePhonicsText === 'function') updatePhonicsText();
+        let sCountEl = document.getElementById('spell-q-count');
+        if(sCountEl && typeof updateSpellText === 'function') updateSpellText();
+
+        if (tabId === 'tab-sh-vocab' && subCategory && typeof setupShVocab === 'function') {
+            setupShVocab(subCategory);
+        }
+    } catch (error) {
+        console.error("載入視圖失敗:", error);
+        alert("載入失敗！請確認你是在 Live Server 環境下執行。");
     }
 }
 
@@ -67,10 +91,14 @@ function backToMenu() {
     if (typeof isShVocabActive !== 'undefined') isShVocabActive = false; 
     if (typeof isShNumActive !== 'undefined') isShNumActive = false;
     
-    document.querySelectorAll('.tab-content').forEach(tab => { tab.style.display = 'none'; });
-    document.getElementById('main-menu').style.display = 'flex';
-    document.getElementById('main-header').style.display = 'block';
+    // 清空並隱藏載入區
+    const contentBox = document.getElementById('app-content');
+    contentBox.style.display = 'none';
+    contentBox.innerHTML = '';
     
+    document.getElementById('main-header').style.display = 'block';
+    if (currentSubMenu) { document.getElementById(currentSubMenu).style.display = 'block'; } 
+    else { document.getElementById('top-level-menu').style.display = 'flex'; }
     if (synth.speaking) synth.cancel();
 }
 
@@ -81,7 +109,7 @@ function resetCurrentTab(tabName) {
         document.getElementById('drill-display').innerText = '準備練習 A！';
         if(typeof setMode === 'function') setMode('long');
         document.getElementById('hide-main-toggle').checked = false;
-        toggleMainSequence();
+        if(typeof toggleMainSequence === 'function') toggleMainSequence();
     } else if (tabName === 'verbs') {
         document.getElementById('verb-board').style.display = 'none';
         document.getElementById('verb-start-screen').style.display = 'block';
@@ -96,14 +124,6 @@ function resetCurrentTab(tabName) {
     }
 }
 
-function toggleMainSequence() {
-    const section = document.getElementById('main-sequence-section');
-    if (section) section.style.display = document.getElementById('hide-main-toggle').checked ? 'none' : 'block';
-}
-
-// ------------------------------------------
-// 🔊 發音引擎邏輯
-// ------------------------------------------
 const synth = window.speechSynthesis;
 function getFemaleUSVoice() {
     const voices = synth.getVoices();
@@ -113,12 +133,8 @@ function getFemaleUSVoice() {
 function speak(text, lang, customRate = 0.8) {
     if (synth.speaking) synth.cancel(); 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang; 
-    utterance.rate = Math.max(0.2, customRate); 
-    if (lang === 'en-US') { 
-        const voice = getFemaleUSVoice(); 
-        if (voice) utterance.voice = voice; 
-    }
+    utterance.lang = lang; utterance.rate = Math.max(0.2, customRate); 
+    if (lang === 'en-US') { const voice = getFemaleUSVoice(); if (voice) utterance.voice = voice; }
     synth.speak(utterance);
 }
 
@@ -127,8 +143,7 @@ function speakBilingual(enText, zhText, enRate = 0.5, zhRate = 0.8) {
     if (enText) {
         const enUtterance = new SpeechSynthesisUtterance(enText);
         enUtterance.lang = 'en-US'; enUtterance.rate = Math.max(0.2, enRate);
-        const enVoice = getFemaleUSVoice();
-        if (enVoice) enUtterance.voice = enVoice;
+        const enVoice = getFemaleUSVoice(); if (enVoice) enUtterance.voice = enVoice;
         synth.speak(enUtterance);
     }
     if (zhText) {
@@ -138,9 +153,6 @@ function speakBilingual(enText, zhText, enRate = 0.5, zhRate = 0.8) {
     }
 }
 
-// ------------------------------------------
-// 🔍 自訂字典翻譯邏輯
-// ------------------------------------------
 async function speakCustomWord() {
     const transDisplay = document.getElementById('translation-display');
     const word = document.getElementById('custom-word').value.trim();
