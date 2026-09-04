@@ -3,7 +3,7 @@
 // 包含：發音填空、動詞測驗、單字拼字挑戰
 // ==========================================
 
-// 狀態變數
+// --- P21 發音遊戲變數 ---
 let currentMode = 'long'; 
 let mainIndex = { 'long': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'short': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'mixed': { A: 0, E: 0, I: 0, O: 0, U: 0 } };
 let drillIndex = { 'long': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'short': { A: 0, E: 0, I: 0, O: 0, U: 0 }, 'mixed': { A: 0, E: 0, I: 0, O: 0, U: 0 } };
@@ -13,8 +13,10 @@ let isCooldown = false;
 let gameScore = 0; let gameTimerInterval = null; let isGameActive = false; let currentGameObj = null; 
 let gameWordsPool = []; let gameElapsed = 0; let gameTotalQuestions = 45;
 
+// --- P21 動詞測驗變數 ---
 let verbListShuffled = []; let verbCurrentIdx = 0; let verbScoreCount = 0; let currentVerbObj = null;
 
+// --- P21 拼字挑戰變數 ---
 let spellMode = 'long'; let spellScore = 0; let spellTimerInterval = null; let isSpellActive = false; 
 let currentSpellObj = null; let spellCorrectChunks = []; let spellCurrentIndex = 0; 
 let spellPool = []; let spellElapsed = 0; let spellTotalQuestions = 45; 
