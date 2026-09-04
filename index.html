@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-        <!-- 密碼鎖定畫面 -->
     <div id="lock-screen">
         <div class="lock-box">
             <h2>🔒 請輸入 5 位數密碼</h2>
@@ -20,292 +19,62 @@
 
     <h1 id="main-header">字母拼讀與動詞測驗</h1>
     
-    <!-- =========================
-         🌟 目錄首頁 (Main Menu)
-         ========================= -->
-    <div id="main-menu" class="menu-container">
-        
+    <!-- 🌟 第一層：主大類選單 -->
+    <div id="top-level-menu" class="menu-container top-level-layout">
+        <button class="top-menu-btn sh-btn" onclick="openSubMenu('submenu-sh')">
+            <span class="icon">🏅</span>
+            <span class="text">聖心小一英文檢定</span>
+        </button>
+        <button class="top-menu-btn p21-btn" onclick="openSubMenu('submenu-p21')">
+            <span class="icon">🔤</span>
+            <span class="text">P21 Phonics</span>
+        </button>
+        <button class="top-menu-btn tool-btn" onclick="openSubMenu('submenu-tools')">
+            <span class="icon">🛠️</span>
+            <span class="text">其他小工具</span>
+        </button>
+    </div>
+
+    <!-- 🌟 第二層：子目錄選單 (改用 loadView) -->
+    <div id="submenu-sh" class="submenu-container" style="display: none;">
+        <div class="top-bar"><button class="back-btn" onclick="backToTopMenu()">🔙 回大目錄</button></div>
         <div class="menu-section exam-section">
             <div class="menu-title">🏅 聖心小一英文檢定</div>
-            <button class="menu-btn" onclick="openSection('tab-sh-vocab', 'family')">👨‍👩‍👧‍👦 1. 家人 (Family) 聽力測驗</button>
-            <button class="menu-btn" onclick="openSection('tab-sh-vocab', 'weather')">🌤️ 2. 天氣 (Weather) 聽力測驗</button>
-            <button class="menu-btn" onclick="openSection('tab-sh-vocab', 'food')">🍎 3. 蔬果 (Fruits & Veggies) 聽力測驗</button>
-            <button class="menu-btn" onclick="openSection('tab-sh-number')">🔢 4. 數字 1-100 聽力是非題</button>
+            <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-vocab', 'family')">👨‍👩‍👧‍👦 1. 家人 (Family) 聽力測驗</button>
+            <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-vocab', 'weather')">🌤️ 2. 天氣 (Weather) 聽力測驗</button>
+            <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-vocab', 'food')">🍎 3. 蔬果 (Fruits & Veggies) 聽力測驗</button>
+            <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-number')">🔢 4. 數字 1-100 聽力是非題</button>
+            <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-vocab', 'az')">🔤 5. A-Z 單字聽力測驗</button>
+            <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-vocab', 'shapes')">🔺 6. 形狀 (Shapes) 聽力測驗</button>
+            <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-vocab', 'comprehensive')">🌟 7. 1-6 綜合模擬大考 (隨機抽半)</button>
         </div>
+    </div>
 
+    <div id="submenu-p21" class="submenu-container" style="display: none;">
+        <div class="top-bar"><button class="back-btn" onclick="backToTopMenu()">🔙 回大目錄</button></div>
         <div class="menu-section phonics-section">
             <div class="menu-title">🔤 p21 phonics</div>
-            <button class="menu-btn" onclick="openSection('tab-phonics')">📖 母音發音與填空挑戰</button>
-            <button class="menu-btn" onclick="openSection('tab-spelling')">🧩 單字拼拼樂</button>
-            <button class="menu-btn" onclick="openSection('tab-verbs')">🏃 動詞練習與 9 題測驗</button>
+            <button class="menu-btn" onclick="loadView('p21', 'tab-phonics')">📖 母音發音與填空挑戰</button>
+            <button class="menu-btn" onclick="loadView('p21', 'tab-spelling')">🧩 單字拼拼樂</button>
+            <button class="menu-btn" onclick="loadView('p21', 'tab-verbs')">🏃 動詞練習與 9 題測驗</button>
         </div>
+    </div>
 
+    <div id="submenu-tools" class="submenu-container" style="display: none;">
+        <div class="top-bar"><button class="back-btn" onclick="backToTopMenu()">🔙 回大目錄</button></div>
         <div class="menu-section tool-section">
             <div class="menu-title">🛠️ 其他工具</div>
-            <button class="menu-btn" onclick="openSection('tab-custom')">🔍 自訂語音字典</button>
-        </div>
-
-    </div>
-
-    <!-- =========================
-         [新增] 聖心檢定單字測驗 (tab-sh-vocab)
-         ========================= -->
-    <div id="tab-sh-vocab" class="tab-content">
-        <div class="top-bar">
-            <button class="back-btn" onclick="backToMenu()">🏠 回目錄</button>
-        </div>
-        
-        <div class="section-container sh-vocab-section">
-            <h2 id="sh-vocab-title" style="font-size: 1.2rem;">🏅 單字聽力測驗</h2>
-            <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">聽英文發音，選出正確的單字！</p>
-            
-            <div class="game-stats">
-                <span id="sh-vocab-progress" style="color: #8e44ad;">📊 第 1 題</span>
-                <span id="sh-vocab-score" style="color: #27ae60;">🏆 得分: 0</span>
-            </div>
-            
-            <div id="sh-vocab-start-screen">
-                <p id="sh-vocab-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
-                <button class="game-start-btn" style="background-color: #e74c3c; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);" onclick="startShVocab()">▶️ 開始測驗</button>
-            </div>
-            
-            <div id="sh-vocab-board" style="display: none;">
-                <button class="game-hint-btn" style="background-color: #e74c3c;" onclick="playShVocabHint()">🔊 再聽一次發音</button>
-                <div class="game-zh-display" id="sh-vocab-zh" style="margin-top: 15px; font-size: 1.8rem; color: #d35400;">(中文)</div>
-                <div id="sh-vocab-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 15px;">請選擇正確的英文單字：</div>
-                <div class="game-options-container" id="sh-vocab-options"></div>
-            </div>
+            <button class="menu-btn" onclick="loadView('tools', 'tab-custom')">🔍 自訂語音字典</button>
         </div>
     </div>
 
-    <!-- =========================
-         [新增] 聖心檢定數字是非題 (tab-sh-number)
-         ========================= -->
-    <div id="tab-sh-number" class="tab-content">
-        <div class="top-bar">
-            <button class="back-btn" onclick="backToMenu()">🏠 回目錄</button>
-        </div>
-        
-        <div class="section-container sh-number-section">
-            <h2 style="font-size: 1.2rem;">🔢 數字 1-100 聽力是非題</h2>
-            <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">你聽到的數字，跟畫面上的數字一樣嗎？</p>
-            
-            <div class="game-stats">
-                <span id="sh-num-progress" style="color: #2980b9;">📊 第 1 題 / 共 10 題</span>
-                <span id="sh-num-score" style="color: #27ae60;">🏆 得分: 0 / 10</span>
-            </div>
-            
-            <div id="sh-num-start-screen">
-                <p id="sh-num-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
-                <button class="game-start-btn" style="background-color: #2980b9; box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);" onclick="startShNumber()">▶️ 開始 10 題測驗</button>
-            </div>
-            
-            <div id="sh-num-board" style="display: none;">
-                <button class="game-hint-btn" style="background-color: #2980b9;" onclick="playShNumberHint()">🔊 再聽一次數字</button>
-                <div class="big-number-display" id="sh-num-display">50</div>
-                <div id="sh-num-feedback" style="font-weight: bold; font-size: 1.2rem; color: #7f8c8d; margin-top: 10px; min-height: 30px;">請判斷對錯：</div>
-                
-                <div class="tf-btn-container" id="sh-num-options">
-                    <button class="tf-btn true-btn" onclick="checkShNumber(true)">✅ 對</button>
-                    <button class="tf-btn false-btn" onclick="checkShNumber(false)">❌ 錯</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ... (下面保留原本的 tab-phonics, tab-verbs, tab-spelling, tab-custom 等程式碼，完全不動) ... -->
-    <!-- 為節省篇幅，請將原本的 HTML 接在這邊 -->
-    
-    <!-- 發音區 (tab-phonics) -->
-    <div id="tab-phonics" class="tab-content">
-        <div class="top-bar">
-            <button class="back-btn" onclick="backToMenu()">🏠 回目錄</button>
-            <button class="reset-btn" onclick="resetCurrentTab('phonics')">🔄 重新設定</button>
-        </div>
-        
-        <div class="mode-selector">
-            <button id="btn-long" class="mode-btn active" onclick="setMode('long')">🌟 長母音</button>
-            <button id="btn-short" class="mode-btn" onclick="setMode('short')">⭐ 短母音</button>
-            <button id="btn-mixed" class="mode-btn" onclick="setMode('mixed')">🔥 綜合挑戰</button>
-        </div>
-
-        <div style="margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;">
-            <input type="checkbox" id="hide-main-toggle" style="width: 20px; height: 20px; cursor: pointer;" onchange="toggleMainSequence()">
-            <label for="hide-main-toggle" style="font-weight: bold; color: #7f8c8d; font-size: 1.1rem; cursor: pointer;">隱藏「綜合順序」區塊</label>
-        </div>
-
-        <div class="section-container" id="main-sequence-section">
-            <h2 id="title-main" style="font-size: 1.2rem;">🎲 綜合順序 (長母音)</h2>
-            <div class="vowel-container">
-                <button class="vowel-btn bg-a" onclick="playVowel('A', this)">A</button>
-                <button class="vowel-btn bg-e" onclick="playVowel('E', this)">E</button>
-                <button class="vowel-btn bg-i" onclick="playVowel('I', this)">I</button>
-                <button class="vowel-btn bg-o" onclick="playVowel('O', this)">O</button>
-                <button class="vowel-btn bg-u" onclick="playVowel('U', this)">U</button>
-            </div>
-            <div id="example-display">請點擊上方字母！</div>
-        </div>
-
-        <div class="section-container drill-section">
-            <h2 id="title-drill" style="font-size: 1.2rem;">🎯 單一字母特訓 (長母音)</h2>
-            <div class="vowel-container" style="gap: 8px;">
-                <button id="drill-a" class="drill-vowel-btn bg-a active" onclick="setDrillVowel('A')">A</button>
-                <button id="drill-e" class="drill-vowel-btn bg-e" onclick="setDrillVowel('E')">E</button>
-                <button id="drill-i" class="drill-vowel-btn bg-i" onclick="setDrillVowel('I')">I</button>
-                <button id="drill-o" class="drill-vowel-btn bg-o" onclick="setDrillVowel('O')">O</button>
-                <button id="drill-u" class="drill-vowel-btn bg-u" onclick="setDrillVowel('U')">U</button>
-            </div>
-            <button class="play-drill-btn" onclick="playDrillWord(this)">🔊 下一個單字</button>
-            <div id="drill-display">準備練習 A！</div>
-        </div>
-
-        <div class="section-container game-section">
-            <h2 id="title-game" style="font-size: 1.2rem;">🎮 長母音填空挑戰</h2>
-            <div class="game-stats">
-                <span id="game-timer" style="color: #e67e22;">⏳ 00:00</span>
-                <span id="game-score" style="color: #27ae60;">🏆 答對: 0 / 45</span>
-            </div>
-            <div id="game-start-screen">
-                <div style="margin-bottom: 20px;">
-                    <label for="phonics-q-count" style="font-weight:bold; color:#7f8c8d; font-size:1.1rem; margin-right: 5px;">📝 選擇挑戰題數：</label>
-                    <select id="phonics-q-count" class="q-select" onchange="updatePhonicsText()">
-                        <option value="15">15 題 (小試身手)</option>
-                        <option value="25">25 題 (一般挑戰)</option>
-                        <option value="45" selected>45 題 (完整題庫)</option>
-                    </select>
-                </div>
-                <span id="game-best-record" class="record-text">👑 最快通關紀錄: 無</span>
-                <p id="game-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
-                <button class="game-start-btn" onclick="startGame()" id="start-btn-text">▶️ 開始 45 題挑戰</button>
-            </div>
-            <div id="game-board" style="display: none;">
-                <button class="game-hint-btn" onclick="playGameHint()">🔊 再聽一次發音</button>
-                <div class="game-word-display" id="game-word">c ????? k e</div>
-                <div class="game-zh-display" id="game-zh"></div>
-                <div id="game-feedback" style="font-weight: bold; color: #7f8c8d;">請選擇缺少的母音：</div>
-                <div class="game-options-container" id="game-options"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 動詞區 (tab-verbs) -->
-    <div id="tab-verbs" class="tab-content">
-        <div class="top-bar">
-            <button class="back-btn" onclick="backToMenu()">🏠 回目錄</button>
-            <button class="reset-btn" onclick="resetCurrentTab('verbs')">🔄 重新設定</button>
-        </div>
-        
-        <div class="section-container verb-section">
-            <h2 style="font-size: 1.2rem;">🏃 動詞短句練習 (Verbs)</h2>
-            <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">點擊按鈕，練習朗讀完整句子</p>
-            <div class="vowel-container" style="gap: 12px; margin-top: 15px;">
-                <button class="verb-btn" onclick="playVerb(0, this)">read</button>
-                <button class="verb-btn" onclick="playVerb(1, this)">write</button>
-                <button class="verb-btn" onclick="playVerb(2, this)">look</button>
-                <button class="verb-btn" onclick="playVerb(3, this)">ride</button>
-                <button class="verb-btn" onclick="playVerb(4, this)">open</button>
-                <button class="verb-btn" onclick="playVerb(5, this)">color</button>
-                <button class="verb-btn" onclick="playVerb(6, this)">listen</button>
-                <button class="verb-btn" onclick="playVerb(7, this)">eat</button>
-                <button class="verb-btn" onclick="playVerb(8, this)">draw</button>
-            </div>
-            <div id="verb-display" style="font-size: 1.6rem; color: #d81b60; font-weight: bold; margin-top: 15px; min-height: 40px;">請點擊上方動詞！</div>
-            <div id="verb-zh-display" style="font-size: 1.2rem; color: #7f8c8d; font-weight: bold; margin-top: 5px;"></div>
-        </div>
-
-        <div class="section-container verb-game-section">
-            <h2 style="font-size: 1.2rem;">🎮 動詞短句 9 題填空挑戰</h2>
-            <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">看句子，選出正確的動詞填空</p>
-            <div class="game-stats">
-                <span id="verb-progress" style="color: #8e44ad;">📊 第 1 題 / 共 9 題</span>
-                <span id="verb-score" style="color: #27ae60;">🏆 得分: 0 / 9</span>
-            </div>
-            <div id="verb-start-screen">
-                <span id="verb-best-record" class="record-text">👑 最高得分紀錄: 無</span>
-                <p id="verb-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
-                <button class="game-start-btn" style="background-color: #8e44ad; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3);" onclick="startVerbQuiz()">▶️ 開始 9 題動詞測驗</button>
-            </div>
-            <div id="verb-board" style="display: none;">
-                <button class="game-hint-btn" style="background-color: #9b59b6;" onclick="playVerbHint()">🔊 聽雙語提示</button>
-                <div class="game-word-display" id="verb-sentence" style="font-size: 1.8rem; letter-spacing: 1px; margin-top: 10px;">I ????? a book.</div>
-                <div class="game-zh-display" id="verb-zh" style="margin-top: 10px;">(我讀一本書)</div>
-                <div id="verb-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 10px;">請選擇正確的動詞：</div>
-                <div class="game-options-container" id="verb-options"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 拼字區 (tab-spelling) -->
-    <div id="tab-spelling" class="tab-content">
-        <div class="top-bar">
-            <button class="back-btn" onclick="backToMenu()">🏠 回目錄</button>
-            <button class="reset-btn" onclick="resetCurrentTab('spelling')">🔄 重新設定</button>
-        </div>
-        
-        <div class="mode-selector">
-            <button id="spell-btn-long" class="mode-btn active" onclick="setSpellMode('long')">🌟 長母音</button>
-            <button id="spell-btn-short" class="mode-btn" onclick="setSpellMode('short')">⭐ 短母音</button>
-            <button id="spell-btn-mixed" class="mode-btn" onclick="setSpellMode('mixed')">🔥 綜合挑戰</button>
-        </div>
-
-        <div style="margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;">
-            <input type="checkbox" id="az-toggle" style="width: 20px; height: 20px; cursor: pointer;" onchange="if(isSpellActive) forceEndSpellGame(true);">
-            <label for="az-toggle" style="font-weight: bold; color: #e67e22; font-size: 1.1rem; cursor: pointer;">開啟 A-Z 鍵盤進階模式</label>
-        </div>
-
-        <div class="section-container spell-game-section">
-            <h2 id="title-spell" style="font-size: 1.2rem;">🧩 單字拼拼樂 (長母音)</h2>
-            <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">聽發音，把打亂的發音組合按順序拼出來！</p>
-            
-            <div class="game-stats">
-                <span id="spell-timer" style="color: #d35400;">⏳ 00:00</span>
-                <span id="spell-score" style="color: #27ae60;">🏆 拼對: 0 / 45</span>
-            </div>
-            
-            <div id="spell-start-screen">
-                <div style="margin-bottom: 20px;">
-                    <label for="spell-q-count" style="font-weight:bold; color:#7f8c8d; font-size:1.1rem; margin-right: 5px;">📝 選擇挑戰題數：</label>
-                    <select id="spell-q-count" class="q-select" onchange="updateSpellText()">
-                        <option value="15">15 題 (小試身手)</option>
-                        <option value="25">25 題 (一般挑戰)</option>
-                        <option value="45" selected>45 題 (完整題庫)</option>
-                    </select>
-                </div>
-                <span id="spell-best-record" class="record-text">👑 最快通關紀錄: 無</span>
-                <p id="spell-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
-                <button class="game-start-btn" style="background-color: #e67e22; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);" id="spell-start-btn-text" onclick="startSpellGame()">▶️ 開始 45 題挑戰</button>
-            </div>
-            
-            <div id="spell-board" style="display: none;">
-                <button class="game-hint-btn" style="background-color: #e67e22;" onclick="playSpellHint()">🔊 再聽一次發音</button>
-                <div id="spell-slots" class="spell-slot-container"></div>
-                <div class="game-zh-display" id="spell-zh"></div>
-                <div id="spell-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 10px;">請依序點擊拼出單字：</div>
-                
-                <div class="game-options-container" id="spell-options"></div>
-                <div class="keyboard-container" id="spell-keyboard" style="display: none;"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 其他工具：自訂字典區塊 -->
-    <div id="tab-custom" class="tab-content">
-        <div class="top-bar">
-            <button class="back-btn" onclick="backToMenu()">🏠 回目錄</button>
-            <button class="reset-btn" onclick="resetCurrentTab('custom')">🔄 刪除打字</button>
-        </div>
-        <div class="section-container">
-            <h2 style="font-size: 1.2rem;">🔍 自訂發音翻譯</h2>
-            <input type="text" id="custom-word" placeholder="輸入單字，例如 Apple" onkeydown="if(event.key === 'Enter') speakCustomWord()">
-            <button class="speak-btn" onclick="speakCustomWord()">唸出</button>
-            <div id="translation-display" style="margin-top: 15px; font-size: 1.2rem; color: #27ae60; font-weight: bold;"></div>
-        </div>
-    </div>
+    <!-- 🌟 第三層：動態視圖載入區 (所有測驗畫面都會塞進這裡) -->
+    <div id="app-content" style="display: none;"></div>
 
     <!-- 引入 JavaScript 檔案 -->
     <script src="js/data.js"></script>
-    <script src="js/app.js"></script>      <!-- 共用核心模組 -->
-    <script src="js/app-sh.js"></script>   <!-- 聖心小一專用模組 -->
-    <script src="js/app-p21.js"></script>  <!-- P21 Phonics 專用模組 -->
+    <script src="js/app.js"></script>
+    <script src="js/app-sh.js"></script>
+    <script src="js/app-p21.js"></script>
 </body>
 </html>
