@@ -1,17 +1,18 @@
 // ==========================================
 // 檔案 2: 聖心小一專屬模組 (app-sh.js)
-// 包含：單字聽力測驗、數字 1-100 是非題
+// 包含：單字聽力測驗、數字是非題
 // ==========================================
 
-// --- 聖心單字聽力測驗變數 ---
+// --- 聖心模組專屬變數 ---
 let shVocabCategory = ''; let shVocabPool = []; let shVocabCurrent = null;
 let shVocabScore = 0; let shVocabTotal = 0; let isShVocabActive = false;
 
-// --- 聖心數字是非題變數 ---
 let shNumScore = 0; let shNumCurrentIdx = 0; let shNumTotal = 10;
 let shNumSpoken = 0; let shNumDisplayed = 0; let isShNumActive = false;
 
-// 🏆 單字聽力測驗 (Cat 1~3)
+// ------------------------------------------
+// 🏆 單字聽力測驗邏輯
+// ------------------------------------------
 function setupShVocab(category) {
     shVocabCategory = category;
     isShVocabActive = false;
@@ -23,12 +24,38 @@ function setupShVocab(category) {
     if(category === 'family') titleText = '👨‍👩‍👧‍👦 家人單字測驗';
     if(category === 'weather') titleText = '🌤️ 天氣單字測驗';
     if(category === 'food') titleText = '🍎 蔬果單字測驗';
+    if(category === 'az') titleText = '🔤 A-Z 單字測驗';
+    if(category === 'shapes') titleText = '🔺 形狀單字測驗';
+    if(category === 'comprehensive') titleText = '🌟 聖心小一綜合模擬大考';
     document.getElementById('sh-vocab-title').innerText = titleText;
 }
 
 function startShVocab() {
     isShVocabActive = true; shVocabScore = 0;
-    shVocabPool = [...sacredHeartData[shVocabCategory]].sort(() => 0.5 - Math.random());
+    
+    let fullPool = [];
+    
+    // 如果是綜合考試，將 1~6 項（家人、天氣、蔬果、AZ、形狀）全部打包
+    if (shVocabCategory === 'comprehensive') {
+        let masterPool = [
+            ...sacredHeartData.family,
+            ...sacredHeartData.weather,
+            ...sacredHeartData.food,
+            ...sacredHeartData.az,
+            ...sacredHeartData.shapes
+        ];
+        masterPool.sort(() => 0.5 - Math.random());
+        
+        // 算出全部總題數，然後「抽出一半」（無條件進位或四捨五入）
+        let halfCount = Math.ceil(masterPool.length / 2);
+        fullPool = masterPool.slice(0, halfCount);
+        
+    } else {
+        fullPool = [...sacredHeartData[shVocabCategory]].sort(() => 0.5 - Math.random());
+        fullPool = fullPool.length > 10 ? fullPool.slice(0, 10) : fullPool;
+    }
+    
+    shVocabPool = fullPool;
     shVocabTotal = shVocabPool.length;
     
     document.getElementById('sh-vocab-score').innerText = `🏆 得分: 0`;
@@ -51,11 +78,16 @@ function nextShVocab() {
     shVocabCurrent = shVocabPool.pop();
     let currentQNumber = shVocabTotal - shVocabPool.length;
     document.getElementById('sh-vocab-progress').innerText = `📊 第 ${currentQNumber} / ${shVocabTotal} 題`;
-    document.getElementById('sh-vocab-zh').innerText = `(${shVocabCurrent.zh})`;
-    document.getElementById('sh-vocab-feedback').innerText = '請選出正確的圖案與單字：';
+    document.getElementById('sh-vocab-zh').innerText = ''; 
+    document.getElementById('sh-vocab-feedback').innerText = '請聽發音，選出正確的圖案：';
     document.getElementById('sh-vocab-feedback').style.color = '#7f8c8d';
 
-    let wrongAnswers = sacredHeartData[shVocabCategory].filter(item => item.en !== shVocabCurrent.en).sort(() => 0.5 - Math.random());
+    // 抓取錯誤選項：如果是綜合考試，從全部題庫中找錯誤選項；否則從當前類別找
+    let allItems = (shVocabCategory === 'comprehensive') ? [
+        ...sacredHeartData.family, ...sacredHeartData.weather, ...sacredHeartData.food, ...sacredHeartData.az, ...sacredHeartData.shapes
+    ] : sacredHeartData[shVocabCategory];
+
+    let wrongAnswers = allItems.filter(item => item.en !== shVocabCurrent.en).sort(() => 0.5 - Math.random());
     let options = [shVocabCurrent, wrongAnswers[0], wrongAnswers[1]].sort(() => 0.5 - Math.random());
     
     const optsDiv = document.getElementById('sh-vocab-options'); 
@@ -64,10 +96,7 @@ function nextShVocab() {
     options.forEach(optObj => {
         const btn = document.createElement('button'); 
         btn.className = 'game-opt-btn'; 
-        btn.innerHTML = `
-            <div class="card-img">${optObj.img}</div>
-            <div class="card-text">${optObj.en}</div>
-        `;
+        btn.innerHTML = `<div class="card-img">${optObj.img}</div>`;
         btn.onclick = function() { checkShVocabAnswer(optObj.en, this); }; 
         optsDiv.appendChild(btn);
     });
@@ -92,7 +121,10 @@ function checkShVocabAnswer(ans, btn) {
 }
 function playShVocabHint() { if(shVocabCurrent && isShVocabActive) speak(shVocabCurrent.en, 'en-US', 0.8); }
 
-// 🏆 數字聽力是非題 (Cat 4)
+
+// ------------------------------------------
+// 🏆 數字聽力是非題邏輯
+// ------------------------------------------
 function startShNumber() {
     isShNumActive = true; shNumScore = 0; shNumCurrentIdx = 0;
     document.getElementById('sh-num-score').innerText = `🏆 得分: 0 / ${shNumTotal}`;
@@ -118,11 +150,16 @@ function nextShNumber() {
     document.getElementById('sh-num-feedback').style.color = '#7f8c8d';
     
     document.querySelectorAll('.tf-btn').forEach(b => b.disabled = false);
-    shNumSpoken = Math.floor(Math.random() * 100) + 1;
-    let isTrueQuestion = Math.random() > 0.5;
     
-    if (isTrueQuestion) { shNumDisplayed = shNumSpoken; } 
-    else { do { shNumDisplayed = Math.floor(Math.random() * 100) + 1; } while (shNumDisplayed === shNumSpoken); }
+    // 隨機決定要唸的數字與顯示的數字
+    shNumSpoken = Math.floor(Math.random() * 100) + 1;
+    let isTrueQuestion = Math.random() > 0.5; // 50% 機率是正確的
+    
+    if (isTrueQuestion) { 
+        shNumDisplayed = shNumSpoken; 
+    } else { 
+        do { shNumDisplayed = Math.floor(Math.random() * 100) + 1; } while (shNumDisplayed === shNumSpoken); 
+    }
 
     document.getElementById('sh-num-display').innerText = shNumDisplayed;
     setTimeout(() => { if(isShNumActive) speak(shNumSpoken.toString(), 'en-US', 0.8); }, 500);
