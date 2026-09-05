@@ -75,9 +75,9 @@ const sacredHeartData = {
         {en: 'monkey', zh: '猴子', img: '🐒'}, {en: 'nest', zh: '鳥巢', img: '🪹'},
         {en: 'octopus', zh: '章魚', img: '🐙'}, {en: 'pig', zh: '豬', img: '🐷'},
         {en: 'queen', zh: '皇后', img: '👸'}, {en: 'ruler', zh: '尺', img: '📏'},
-        {en: 'strawberry', zh: '草莓', img: '🍓'}, {en: 'umbrella', zh: '雨傘', img: '☂️'}, 
-        {en: 'van', zh: '廂型車', img: '🚐'}, {en: 'wheel', zh: '輪子', img: '🛞'}, 
-        {en: 'xylophone', zh: '木琴', img: '🎹'}, {en: 'yarn', zh: '毛線', img: '🧶'}, 
+        {en: 'strawberry', zh: '草莓', img: '🍓'}, {en: 'umbrella', zh: '雨傘', img: '☂️'},
+        {en: 'van', zh: '廂型車', img: '🚐'}, {en: 'wheel', zh: '輪子', img: '🛞'},
+        {en: 'xylophone', zh: '木琴', img: '🎹'}, {en: 'yarn', zh: '毛線', img: '🧶'},
         {en: 'zebra', zh: '斑馬', img: '🦓'}
     ],
     shapes: [

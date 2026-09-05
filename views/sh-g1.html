@@ -1,9 +1,9 @@
-<!-- 聖心：單字聽力測驗 -->
-<div id="tab-sh-vocab" class="tab-content">
+<!-- 聖心：單字與綜合聽力測驗 -->
+<div id="tab-sh-vocab" class="tab-content" style="display: none;">
     <div class="top-bar"><button class="back-btn" onclick="backToMenu()">🏠 回選單</button></div>
     <div class="section-container sh-vocab-section">
         <h2 id="sh-vocab-title" style="font-size: 1.2rem;">🏅 單字聽力測驗</h2>
-        <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">聽英文發音，選出正確的單字！</p>
+        <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">聽英文發音，選出正確的圖案！</p>
         <div class="game-stats">
             <span id="sh-vocab-progress" style="color: #8e44ad;">📊 第 1 題</span>
             <span id="sh-vocab-score" style="color: #27ae60;">🏆 得分: 0</span>
@@ -14,15 +14,15 @@
         </div>
         <div id="sh-vocab-board" style="display: none;">
             <button class="game-hint-btn" style="background-color: #e74c3c;" onclick="playShVocabHint()">🔊 再聽一次發音</button>
-            <div class="game-zh-display" id="sh-vocab-zh" style="margin-top: 15px; font-size: 1.8rem; color: #d35400;">(中文)</div>
-            <div id="sh-vocab-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 15px;">請選擇正確的圖案與單字：</div>
+            <div class="game-zh-display" id="sh-vocab-zh" style="margin-top: 15px; font-size: 1.8rem; color: #d35400;"></div>
+            <div id="sh-vocab-feedback" style="font-weight: bold; color: #7f8c8d; margin-top: 15px;">請聽發音，選出正確的圖案：</div>
             <div class="game-options-container" id="sh-vocab-options"></div>
         </div>
     </div>
 </div>
 
 <!-- 聖心：數字 1-100 是非題 -->
-<div id="tab-sh-number" class="tab-content">
+<div id="tab-sh-number" class="tab-content" style="display: none;">
     <div class="top-bar"><button class="back-btn" onclick="backToMenu()">🏠 回選單</button></div>
     <div class="section-container sh-number-section">
         <h2 style="font-size: 1.2rem;">🔢 數字 1-100 聽力是非題</h2>
@@ -42,6 +42,36 @@
             <div class="tf-btn-container" id="sh-num-options">
                 <button class="tf-btn true-btn" onclick="checkShNumber(true)">✅ 對</button>
                 <button class="tf-btn false-btn" onclick="checkShNumber(false)">❌ 錯</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 聖心：第 8 項 家長口讀測驗 -->
+<div id="tab-sh-oral" class="tab-content" style="display: none;">
+    <div class="top-bar">
+        <button class="back-btn" onclick="backToMenu()">🏠 回選單</button>
+        <button class="reset-btn" onclick="startShOral()">🔄 重新測驗</button>
+    </div>
+    <div class="section-container sh-vocab-section">
+        <h2 style="font-size: 1.3rem;">🗣️ 家長口讀測驗</h2>
+        <p style="color:#7f8c8d; font-size: 0.9rem; margin-bottom: 5px;">請小孩看圖自己唸出來，家長負責判定 Pass 或 Fail！</p>
+        <div class="game-stats">
+            <span id="sh-oral-progress" style="color: #8e44ad;">📊 第 1 題</span>
+            <span id="sh-oral-score" style="color: #27ae60;">🏆 Pass: 0 題</span>
+        </div>
+        <div id="sh-oral-start-screen">
+            <p id="sh-oral-end-msg" style="font-size: 1.5rem; color: #e74c3c; font-weight: bold; display: none; line-height: 1.5;"></p>
+            <button class="game-start-btn" style="background-color: #8e44ad; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3);" onclick="startShOral()">▶️ 開始口讀測驗</button>
+        </div>
+        <div id="sh-oral-board" style="display: none;">
+            <button class="game-hint-btn" style="background-color: #3498db; font-size: 1.1rem; padding: 10px 20px;" onclick="playOralPronunciation()">🔊 聽正確唸法</button>
+            <div id="sh-oral-display-img" style="font-size: 6.5rem; margin: 25px 0 10px 0; line-height: 1;">🍎</div>
+            <div id="sh-oral-parent-hint" style="color: #bdc3c7; font-size: 1.1rem; font-weight: bold; margin-bottom: 20px;"></div>
+            <div id="sh-oral-feedback" style="font-weight: bold; font-size: 1.2rem; color: #7f8c8d; margin-bottom: 15px;">請小孩看圖唸出單字：</div>
+            <div class="tf-btn-container">
+                <button class="tf-btn true-btn" style="background-color: #2ecc71;" onclick="submitOralScore(true)">👍 Pass </button>
+                <button class="tf-btn false-btn" style="background-color: #e74c3c;" onclick="submitOralScore(false)">💪 Fail </button>
             </div>
         </div>
     </div>

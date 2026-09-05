@@ -1,11 +1,12 @@
 // ==========================================
 // 檔案 1: 共用核心模組 (app.js)
-// 包含：密碼鎖、動態視圖載入、發音引擎
+// 包含：密碼鎖、loadView 動態載入、發音引擎
 // ==========================================
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 const SECRET_PIN = "88888"; 
 let currentSubMenu = ''; 
+let currentLoadedView = ''; // 避免重複 fetch 相同檔案
 
 function checkPin() {
     const input = document.getElementById('pin-input').value;
@@ -46,60 +47,76 @@ function backToTopMenu() {
     currentSubMenu = '';
 }
 
-// 動態載入外部 HTML 視圖
+// 🌟 核心動態載入器：去 views/ 抓取對應模組 HTML
 async function loadView(viewName, tabId, subCategory = null) {
     const contentBox = document.getElementById('app-content');
     
     try {
-        const response = await fetch(`views/${viewName}.html`);
-        if (!response.ok) throw new Error(`找不到視圖: ${viewName}.html`);
-        
-        contentBox.innerHTML = await response.text();
+        // 如果容器內還沒有載入，或者換了不同視圖模組，才重新抓取
+        if (currentLoadedView !== viewName || !contentBox.innerHTML.trim()) {
+            const response = await fetch(`views/${viewName}.html?t=${Date.now()}`); // 加時間戳防瀏覽器快取
+            if (!response.ok) throw new Error(`找不到 views/${viewName}.html 檔案`);
+            contentBox.innerHTML = await response.text();
+            currentLoadedView = viewName;
+        }
+
         contentBox.style.display = 'block';
-        
         document.getElementById('top-level-menu').style.display = 'none';
         document.querySelectorAll('.submenu-container').forEach(el => el.style.display = 'none');
         document.getElementById('main-header').style.display = 'none';
-        
-        // 隱藏剛載入的所有 tab，只顯示目標 tab
-        document.querySelectorAll('#app-content .tab-content').forEach(tab => tab.style.display = 'none');
+
+        // 隱藏該視圖內的所有 tab，只顯示目標 tab
+        contentBox.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
         const targetTab = document.getElementById(tabId);
-        if (targetTab) targetTab.style.display = 'block';
-
-        // 觸發模組 UI 初始化
-        if(typeof updateGameRecordUI === 'function') updateGameRecordUI();
-        if(typeof updateSpellRecordUI === 'function') updateSpellRecordUI();
-        if(typeof updateVerbRecordUI === 'function') updateVerbRecordUI();
         
-        let qCountEl = document.getElementById('phonics-q-count');
-        if(qCountEl && typeof updatePhonicsText === 'function') updatePhonicsText();
-        let sCountEl = document.getElementById('spell-q-count');
-        if(sCountEl && typeof updateSpellText === 'function') updateSpellText();
+        if (!targetTab) {
+            throw new Error(`在 views/${viewName}.html 裡面找不到 id="${tabId}" 的區塊！`);
+        }
+        targetTab.style.display = 'block';
 
-        if (tabId === 'tab-sh-vocab' && subCategory && typeof setupShVocab === 'function') {
+        // 觸發模組初始化
+        if (typeof updateGameRecordUI === 'function') updateGameRecordUI();
+        if (typeof updateSpellRecordUI === 'function') updateSpellRecordUI();
+        if (typeof updateVerbRecordUI === 'function') updateVerbRecordUI();
+
+        if (tabId === 'tab-sh-vocab' && typeof setupShVocab === 'function') {
             setupShVocab(subCategory);
         }
-    } catch (error) {
-        console.error("載入視圖失敗:", error);
-        alert("載入失敗！請確認你是在 Live Server 環境下執行。");
+
+        // 第 8 項口讀測驗重設畫面
+        if (tabId === 'tab-sh-oral') {
+            if (typeof isShOralActive !== 'undefined') isShOralActive = false;
+            const startScreen = document.getElementById('sh-oral-start-screen');
+            const board = document.getElementById('sh-oral-board');
+            const endMsg = document.getElementById('sh-oral-end-msg');
+            if (startScreen) startScreen.style.display = 'block';
+            if (board) board.style.display = 'none';
+            if (endMsg) endMsg.style.display = 'none';
+        }
+
+    } catch (err) {
+        console.error("載入視圖失敗:", err);
+        alert(`載入錯誤: ${err.message}`);
     }
 }
 
 function backToMenu() {
+    if (synth.speaking) synth.cancel();
     if (typeof isGameActive !== 'undefined' && isGameActive && typeof forceEndGame === 'function') forceEndGame();
     if (typeof isSpellActive !== 'undefined' && isSpellActive && typeof forceEndSpellGame === 'function') forceEndSpellGame(false);
     if (typeof isShVocabActive !== 'undefined') isShVocabActive = false; 
     if (typeof isShNumActive !== 'undefined') isShNumActive = false;
+    if (typeof isShOralActive !== 'undefined') isShOralActive = false;
     
-    // 清空並隱藏載入區
     const contentBox = document.getElementById('app-content');
     contentBox.style.display = 'none';
-    contentBox.innerHTML = '';
     
     document.getElementById('main-header').style.display = 'block';
-    if (currentSubMenu) { document.getElementById(currentSubMenu).style.display = 'block'; } 
-    else { document.getElementById('top-level-menu').style.display = 'flex'; }
-    if (synth.speaking) synth.cancel();
+    if (currentSubMenu) {
+        document.getElementById(currentSubMenu).style.display = 'block';
+    } else {
+        document.getElementById('top-level-menu').style.display = 'flex';
+    }
 }
 
 function resetCurrentTab(tabName) {
@@ -108,8 +125,8 @@ function resetCurrentTab(tabName) {
         document.getElementById('example-display').innerText = '請點擊上方字母！';
         document.getElementById('drill-display').innerText = '準備練習 A！';
         if(typeof setMode === 'function') setMode('long');
-        document.getElementById('hide-main-toggle').checked = false;
-        if(typeof toggleMainSequence === 'function') toggleMainSequence();
+        document.getElementById('hide-main-toggle').checked = true;
+        toggleMainSequence();
     } else if (tabName === 'verbs') {
         document.getElementById('verb-board').style.display = 'none';
         document.getElementById('verb-start-screen').style.display = 'block';
@@ -121,6 +138,8 @@ function resetCurrentTab(tabName) {
     } else if (tabName === 'custom') {
         document.getElementById('custom-word').value = '';
         document.getElementById('translation-display').innerText = '';
+    } else if (tabName === 'oral') {
+        if (typeof startShOral === 'function') startShOral();
     }
 }
 
@@ -133,8 +152,12 @@ function getFemaleUSVoice() {
 function speak(text, lang, customRate = 0.8) {
     if (synth.speaking) synth.cancel(); 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang; utterance.rate = Math.max(0.2, customRate); 
-    if (lang === 'en-US') { const voice = getFemaleUSVoice(); if (voice) utterance.voice = voice; }
+    utterance.lang = lang; 
+    utterance.rate = Math.max(0.2, customRate); 
+    if (lang === 'en-US') { 
+        const voice = getFemaleUSVoice(); 
+        if (voice) utterance.voice = voice; 
+    }
     synth.speak(utterance);
 }
 
@@ -143,7 +166,8 @@ function speakBilingual(enText, zhText, enRate = 0.5, zhRate = 0.8) {
     if (enText) {
         const enUtterance = new SpeechSynthesisUtterance(enText);
         enUtterance.lang = 'en-US'; enUtterance.rate = Math.max(0.2, enRate);
-        const enVoice = getFemaleUSVoice(); if (enVoice) enUtterance.voice = enVoice;
+        const enVoice = getFemaleUSVoice();
+        if (enVoice) enUtterance.voice = enVoice;
         synth.speak(enUtterance);
     }
     if (zhText) {
@@ -164,3 +188,4 @@ async function speakCustomWord() {
         transDisplay.innerText = `中文: ${data.responseData.translatedText}`; speak(word, 'en-US');
     } catch (error) { transDisplay.innerText = "翻譯失敗，請檢查網路。"; speak(word, 'en-US'); }
 }
+

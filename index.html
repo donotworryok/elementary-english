@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <!-- 密碼鎖定畫面 -->
     <div id="lock-screen">
         <div class="lock-box">
             <h2>🔒 請輸入 5 位數密碼</h2>
@@ -35,9 +36,12 @@
         </button>
     </div>
 
-    <!-- 🌟 第二層：子目錄選單 (改用 loadView) -->
+    <!-- 🌟 第二層：子目錄選單 (全部透過 loadView 動態載入) -->
+    <!-- 聖心子選單 -->
     <div id="submenu-sh" class="submenu-container" style="display: none;">
-        <div class="top-bar"><button class="back-btn" onclick="backToTopMenu()">🔙 回大目錄</button></div>
+        <div class="top-bar">
+            <button class="back-btn" onclick="backToTopMenu()">🔙 回大目錄</button>
+        </div>
         <div class="menu-section exam-section">
             <div class="menu-title">🏅 聖心小一英文檢定</div>
             <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-vocab', 'family')">👨‍👩‍👧‍👦 1. 家人 (Family) 聽力測驗</button>
@@ -47,11 +51,15 @@
             <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-vocab', 'az')">🔤 5. A-Z 單字聽力測驗</button>
             <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-vocab', 'shapes')">🔺 6. 形狀 (Shapes) 聽力測驗</button>
             <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-vocab', 'comprehensive')">🌟 7. 1-6 綜合模擬大考 (隨機抽半)</button>
+            <button class="menu-btn" onclick="loadView('sh-g1', 'tab-sh-oral')">🗣️ 8. 家長口讀測驗 (形狀全出 + 1~5抽一半)</button>
         </div>
     </div>
 
+    <!-- P21 子選單 -->
     <div id="submenu-p21" class="submenu-container" style="display: none;">
-        <div class="top-bar"><button class="back-btn" onclick="backToTopMenu()">🔙 回大目錄</button></div>
+        <div class="top-bar">
+            <button class="back-btn" onclick="backToTopMenu()">🔙 回大目錄</button>
+        </div>
         <div class="menu-section phonics-section">
             <div class="menu-title">🔤 p21 phonics</div>
             <button class="menu-btn" onclick="loadView('p21', 'tab-phonics')">📖 母音發音與填空挑戰</button>
@@ -60,18 +68,20 @@
         </div>
     </div>
 
+    <!-- 工具子選單 -->
     <div id="submenu-tools" class="submenu-container" style="display: none;">
-        <div class="top-bar"><button class="back-btn" onclick="backToTopMenu()">🔙 回大目錄</button></div>
+        <div class="top-bar">
+            <button class="back-btn" onclick="backToTopMenu()">🔙 回大目錄</button>
+        </div>
         <div class="menu-section tool-section">
             <div class="menu-title">🛠️ 其他工具</div>
             <button class="menu-btn" onclick="loadView('tools', 'tab-custom')">🔍 自訂語音字典</button>
         </div>
     </div>
 
-    <!-- 🌟 第三層：動態視圖載入區 (所有測驗畫面都會塞進這裡) -->
+    <!-- 🌟 第三層：動態掛載點 (依據使用者點擊動態載入對應 HTML) -->
     <div id="app-content" style="display: none;"></div>
 
-    <!-- 引入 JavaScript 檔案 -->
     <script src="js/data.js"></script>
     <script src="js/app.js"></script>
     <script src="js/app-sh.js"></script>
