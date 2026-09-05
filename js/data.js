@@ -87,5 +87,18 @@ const sacredHeartData = {
         {en: 'oval', zh: '橢圓形', img: '🥚'},
         {en: 'diamond', zh: '菱形', img: '🔶'},
         {en: 'rectangle', zh: '長方形', img: '🎫'}
+    ],
+
+    plants_body: [
+        // 植物生長需求 (依學習單)
+        {en: 'water', zh: '水', img: '💧'},
+        {en: 'air', zh: '空氣', img: '💨'},
+        {en: 'sunlight', zh: '陽光', img: '☀️'},
+        {en: 'soil', zh: '土壤', img: '🪴'},
+        // 身體構造 (Head, Shoulders, Knees and Toes)
+        {en: 'head', zh: '頭', img: '🗣️'},
+        {en: 'shoulders', zh: '肩膀', img: '💪'},
+        {en: 'knees', zh: '膝蓋', img: '🦵'},
+        {en: 'toes', zh: '腳趾', img: '🦶'}
     ]
 };

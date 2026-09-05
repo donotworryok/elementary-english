@@ -37,7 +37,8 @@ function setupShVocab(category) {
     if(category === 'food') titleText = '🍎 蔬果單字測驗';
     if(category === 'az') titleText = '🔤 A-Z 單字測驗';
     if(category === 'shapes') titleText = '🔺 形狀單字測驗';
-    if(category === 'comprehensive') titleText = '🌟 1-6 綜合模擬大考 (隨機抽半)';
+    if(category === 'plants_body') titleText = '🌱 植物與身體單字測驗'; // 👈 新增這行
+    if(category === 'comprehensive') titleText = '🌟 綜合模擬大考 (1~7 隨機抽半)'; // 👈 標題順延
     
     document.getElementById('sh-vocab-title').innerText = titleText;
 }
@@ -53,7 +54,8 @@ function startShVocab() {
             ...sacredHeartData.weather,
             ...sacredHeartData.food,
             ...sacredHeartData.az,
-            ...sacredHeartData.shapes
+            ...sacredHeartData.shapes,
+            ...sacredHeartData.plants_body
         ];
         masterPool.sort(() => 0.5 - Math.random());
         fullPool = masterPool.slice(0, Math.ceil(masterPool.length / 2));
@@ -96,7 +98,8 @@ function nextShVocab() {
         ...sacredHeartData.weather, 
         ...sacredHeartData.food, 
         ...sacredHeartData.az, 
-        ...sacredHeartData.shapes
+        ...sacredHeartData.shapes,
+        ...sacredHeartData.plants_body
     ] : sacredHeartData[shVocabCategory] || [];
 
     let wrongAnswers = allItems.filter(item => item.en !== shVocabCurrent.en).sort(() => 0.5 - Math.random());
@@ -215,7 +218,8 @@ function startShOral() {
         ...sacredHeartData.family,
         ...sacredHeartData.weather,
         ...sacredHeartData.food,
-        ...sacredHeartData.az
+        ...sacredHeartData.az,
+        ...sacredHeartData.plants_body
     ];
     otherMaster.sort(() => 0.5 - Math.random());
     let halfOther = otherMaster.slice(0, Math.ceil(otherMaster.length / 2));
